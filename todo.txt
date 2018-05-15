@@ -1,0 +1,8 @@
+- Revoir la façon dont sont gérées les variables
+- Mettre les blocs sous forme d'arbre
+    + remplacer les listes par des tuples fils gauche statement fils droit suite du bloc
+- Revoir l'affichage du graphe de l'ensemble du bloc
+- Fonctions:
+    + Fonctions standard
+    + Gérer le scope des variables dans la fonction
+    + Vérifier fonctionnement des fonctions récursives
