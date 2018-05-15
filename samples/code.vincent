@@ -1,0 +1,45 @@
+1+2 <= 3+4 AND 5*6 == 30;
+1-2 > 3 OR 10/2 != 5;
+x=True;
+x OR 10 - 1 != 9
+
+if 1<2 @
+    y = True
+else
+    y = False
+end
+
+if 1>2 @
+    z = False
+else
+    z = True
+end
+
+if 1<2@
+    if True@
+        developer = 20
+    end
+end
+
+for counter = 0 @ counter < 10 @ counter = counter + 1; counter + 0 @
+    a = counter;
+    b = False
+end
+
+for counter = 0 counter < 3 counter = counter + 1 @
+    c = counter
+end
+
+counter = 0
+while counter < 4 @
+    echo counter;
+    counter = counter + 1
+end
+
+counter = 0
+while counter < 2
+    echo counter;
+    counter = counter + 1
+end
+
+x = "Hello"; y = 'World'; z = x + ' ' + y; echo "x :" x " y :" y " z :" z
