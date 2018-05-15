@@ -6,3 +6,8 @@
     + Fonctions standard
     + Gérer le scope des variables dans la fonction
     + Vérifier fonctionnement des fonctions récursives
+
+
+A voir en dernier recours :
+    - POO
+    - Pointeurs
