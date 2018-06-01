@@ -42,4 +42,4 @@ while counter < 2
     counter = counter + 1
 end
 
-x = "Hello"; y = 'World'; z = x + ' ' + y; echo "x :" x " y :" y " z :" z
+x = "Hello"; y = 'World'; z = x + ' ' + y; echo "x : " + x + " y : " + y + " z : " + z

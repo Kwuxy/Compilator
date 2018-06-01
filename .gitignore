@@ -8,3 +8,9 @@ venv/
 \.idea/
 
 __pycache__/parsetab\.cpython-36\.pyc
+
+img/
+
+parser\.out
+
+parsetab\.py

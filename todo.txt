@@ -1,7 +1,7 @@
 - Revoir la façon dont sont gérées les variables
-- Mettre les blocs sous forme d'arbre
-    + remplacer les listes par des tuples fils gauche statement fils droit suite du bloc
-- Revoir l'affichage du graphe de l'ensemble du bloc
+- Done : Mettre les blocs sous forme d'arbre
+    + Done : remplacer les listes par des tuples fils gauche statement fils droit suite du bloc
+- Done : Revoir l'affichage du graphe de l'ensemble du bloc
 - Precedence
 - Fonctions:
     + Fonctions standard

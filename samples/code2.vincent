@@ -3,11 +3,4 @@
 
 if 1<2 @
     y = True
-else
-    y = False
-end
-
-while counter < 4 @
-    echo counter;
-    counter = counter + 1
 end

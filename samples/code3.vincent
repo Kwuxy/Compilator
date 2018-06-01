@@ -1,0 +1,7 @@
+x = 1 + 2
+if 1 < 2 @
+    y = True
+    Alexis = "<3"
+end
+
+x

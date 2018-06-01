@@ -9,7 +9,6 @@
 # your IDE in administrator mode
 #
 # -----------------------------------------------------------------------------
-import datetime
 
 import ply.lex as lex
 import ply.yacc as yacc
@@ -18,7 +17,7 @@ import graphviz as gv
 import re
 import sys
 from operator import xor
-from time import ctime, strftime, time, gmtime
+from time import strftime, time, gmtime
 
 statement_counter = 1
 
@@ -82,7 +81,7 @@ t_STRING = r'(\'[^\']*\'|"[^\"]*")'
 
 
 def t_NUMBER(t):
-    r'\d+'
+    r"""\d+"""
     t.value = int(t.value)
     return t
 
@@ -92,7 +91,7 @@ t_ignore = " \t"
 
 
 def t_newline(t):
-    r'\n+'
+    r"""\n+"""
     t.lexer.lineno += t.value.count("\n")
 
 
@@ -125,39 +124,26 @@ def p_program(p):
     """program : bloc"""
     p[0] = p[1]
 
-    # begin_time = time()
-    # log_file = open('compilation.log', 'a')
-    #
-    # print("Compilation begin on", strftime("%Y-%m-%d %H:%M:%S", gmtime(begin_time)), '\n', file=log_file)
-    # print_beautiful_list(p[0], "program :", log_file)
-    #
-    # log_file.close()
-    #
-    # eval_bloc(p[0])
-    # log_file = open('compilation.log', 'a')
-    #
-    # end_time = str(time() - begin_time).split('.')
-    # end_time = end_time[0] + '.' + end_time[1][:4]
-    # print("Compilation executed in %s seconds" % end_time, file=log_file)
-    # log_file.close()
+    print(p[0])
 
     global write_in_compilation
 
     if write_in_compilation:
         begin_time = time()
         print_log("Compilation begin on " + strftime("%Y-%m-%d %H:%M:%S", gmtime(begin_time)) + " \n")
-        print_log(p[0], string="program :") #Affiche les statements
+        print_log(p[0], string="program :")  # Affiche les statements
 
-    eval_bloc(p[0])
+        eval_bloc(p[0])
 
-    if write_in_compilation:
         end_time = str(time() - begin_time).split('.')
         end_time = end_time[0] + '.' + end_time[1][:4]
         print_log("Compilation executed in %s seconds" % end_time)
+    else:
+        eval_bloc(p[0])
 
     # print_bloc_as_tree_in_command_line(p[0], 0, ' ')
     # print("names :", names)
-    # print_bloc_as_tree_in_graph(p[0])
+    print_bloc_as_tree_in_graph(p[0])
 
 
 # -------------------- BLOC --------------------
@@ -165,14 +151,9 @@ def p_bloc(p):
     """bloc : statement bloc
             | statement"""
     if len(p) == 3:
-        p[0] = [p[1]] + p[2]
+        p[0] = (p[1], p[2])
     else:
-        p[0] = [p[1]]
-
-    # if len(p) == 3:
-    #     p[0] = (p[1], p[2])
-    # else:
-    #     p[0] = (p[1], ())
+        p[0] = (p[1], ())
 
 
 # -------------------- STATEMENT --------------------
@@ -196,7 +177,7 @@ def p_instruction(p):
 # -------------------- ECHO EXPRESSION --------------------
 
 def p_echo_exp(p):
-    """echo_exp : ECHO bloc"""
+    """echo_exp : ECHO statement"""
     p[0] = ('echo', p[2])
 
 
@@ -300,7 +281,7 @@ def p_float(p):
 
 def p_variable(p):
     """variable : NAME"""
-    #p[0] = p[1]
+    # p[0] = p[1]
     try:
         # p[0] = names[p[1]]
         p[0] = p[1]
@@ -358,22 +339,25 @@ def error(string):
 
 
 # -------------------- CALCUL --------------------
-def eval_bloc(lst):
+def eval_bloc(bloc):
     global statement_counter
 
+    if bloc == ():
+        return
+
     if write_in_compilation:
-        for tple in lst:
-            log_file = open('compilation.log', 'a')
-            print("Statement number", statement_counter, ":", file=log_file)
-            statement_counter = statement_counter + 1
-            print_beautiful_dict(names, "names :", log_file)
+        file_for_log = open('compilation.log', 'a')
+        print("Statement number", statement_counter, ":", file=file_for_log)
+        statement_counter = statement_counter + 1
+        print_beautiful_dict(names, "names :", file_for_log)
 
-            print('Evaluation :', str(tple), ':', str(eval_statement(tple)), "\n\n", file=log_file)
+        print('Evaluation :', str(bloc[0]), ':', str(eval_statement(bloc[0])), "\n\n", file=file_for_log)
 
-            log_file.close()
+        file_for_log.close()
     else:
-        for tple in lst:
-            print(str(eval_statement(tple)))
+        print(str(eval_statement(bloc[0])))
+
+    eval_bloc(bloc[1])
 
 
 def eval_statement(t):
@@ -397,6 +381,7 @@ def eval_statement(t):
     elif t[0] == t_ECHO:
         return eval_echo_exp(t)
     else:
+        print(t)
         return "Unknown command '" + t[0] + "'"
 
 
@@ -459,12 +444,12 @@ def eval_value(val):
         if val[0] == '\"' or val[0] == '\'':  # Si c'est une string
             return val[1:-1]
         else:  # Si c'est une variable
-            #try:
+            # try:
             #    var = names[val]
-            #except LookupError:
+            # except LookupError:
             #    print("Undefined name '%s'" % p[1])
             #    var = 0
-            #return var
+            # return var
             return names[val]
     else:
         return val
@@ -496,9 +481,7 @@ def eval_while_exp(t):
 
 
 def eval_echo_exp(t):
-    res = ""
-    for statement in t[1]:
-        res = res + str(eval_statement(statement)) + " "
+    res = str(eval_statement(t[1])) + " "
     print(res)
     return "echo executed"
 
@@ -517,33 +500,36 @@ def print_bloc_as_tree_in_command_line(lst, decal, car, file_path=sys.stdout):
         print_statement_as_tree_in_command_line(tple, decal, car, file_path)
 
 
-def print_statement_as_tree_in_command_line(t, decal, car, file_path=sys.stdout):
+def print_statement_as_tree_in_command_line(t, decal, car, file_path):
     res = get_decal(decal, car)
     if type(t) != tuple:
         print(res + str(t), file=file_path)
         return
 
-    print(res + str(t[0]), file)
-    print_statement_as_tree_in_command_line(t[1], decal + 1, car, file)
-    print_statement_as_tree_in_command_line(t[2], decal + 1, car, file)
+    print(res + str(t[0]))
+    print_statement_as_tree_in_command_line(t[1], decal + 1, car, file_path)
+    print_statement_as_tree_in_command_line(t[2], decal + 1, car, file_path)
 
 
-def print_bloc_as_tree_in_graph(lst):
+def print_bloc_as_tree_in_graph(tpl):
     graph = gv.Digraph(format='pdf')
     graph.attr('node', shape='circle')
 
-    for tple in lst:
-        add_node(graph, tple)
+    print_bloc_in_graph(graph, tpl)
 
-    graph.view()
+    # for tple in lst:
+    #     add_node(graph, tple)
+
+    graph.render(filename="img/graph")  # Pour la sauvegarde du fichier
+    # graph.view()
 
 
 def print_statement_as_tree_in_graph(t):
     graph = gv.Digraph(format='pdf')
     graph.attr('node', shape='circle')
     add_node(graph, t)
-    # graph.render(filename='img/graph') #Pour la sauvegarde du fichier
-    graph.view()  # Pour l'affichage du graph
+    graph.render(filename='img/graph')  # Pour la sauvegarde du fichier
+    # graph.view()  # Pour l'affichage du graph
 
 
 def add_node(graph, t):
@@ -554,13 +540,56 @@ def add_node(graph, t):
         graph.node(str(my_id), label=str(t))
         return my_id
 
+    if t == ():
+        return
+
+    if type(t[0]) == tuple:
+        for tpl in t:
+            print(tpl)
+            add_node(graph, tpl)
+        return
+
     graph.node(str(my_id), label=str(t[0]))
     while counter < len(t):
         graph.edge(str(my_id), str(add_node(graph, t[counter])), arrowsize='0')
         counter += 1
 
-    #graph.edge(str(my_id), str(add_node(graph, t[1])), arrowsize='0')
-    #graph.edge(str(my_id), str(add_node(graph, t[2])), arrowsize='0')
+    return my_id
+
+
+def print_bloc_in_graph(graph, tpl, bloc_label='bloc', end_label='end'):
+    my_id = uuid.uuid4()
+
+    if tpl == ():
+        graph.node(str(my_id), label=str(end_label))
+        return my_id
+
+    graph.node(str(my_id), label=str(bloc_label))
+    graph.edge(str(my_id), str(print_statement_in_graph(graph, tpl[0])), arrowsize='0')
+    graph.edge(str(my_id), str(print_bloc_in_graph(graph, tpl[1], bloc_label, end_label)), arrowsize='0')
+
+    return my_id
+
+
+def print_statement_in_graph(graph, tpl, bloc_label='bloc secondaire', end_label='end'):
+    my_id = uuid.uuid4()
+
+    if type(tpl) != tuple:  # Affiche les feuilles du graphe
+        graph.node(str(my_id), label=str(tpl))
+        return my_id
+
+    if tpl == ():  # Fin d'un bloc
+        return
+
+    graph.node(str(my_id), label=str(tpl[0]))
+    for counter in range(1, len(tpl)):
+        if type(tpl[counter]) == tuple:
+            if type(tpl[counter][0]) == tuple:
+                bloc_son = print_bloc_in_graph(graph, tpl[counter], bloc_label, end_label)
+                graph.edge(str(my_id), str(bloc_son), arrowsize='0')
+                continue
+
+        graph.edge(str(my_id), str(print_statement_in_graph(graph, tpl[counter])), arrowsize='0')
 
     return my_id
 
@@ -582,27 +611,42 @@ def print_beautiful_dict(dct, string='', file_path=sys.stdout):
 
 
 def print_log(something, string=''):
-
-    if(write_in_compilation): #Si on écrit dans le fichier compilation.log
+    if write_in_compilation:  # Si on écrit dans le fichier compilation.log
         file_to_write = open('compilation.log', 'a')
     else:
         file_to_write = sys.stdout
 
-    if type(something) == tuple:
+    if type(something) == dict:
         print_beautiful_dict(something, string=string, file_path=file_to_write)
     elif type(something) == list:
         print_beautiful_list(something, string=string, file_path=file_to_write)
+    elif type(something) == tuple:
+        print_statement_list(something, string=string, file_to_write_in=file_to_write)
     else:
         print(something, file=file_to_write)
 
-    if (write_in_compilation):
+    if write_in_compilation:
         file_to_write.close()
+
+
+def print_statement_list(bloc, string='', file_to_write_in=sys.stdout):
+    print(string, '(', file=file_to_write_in)
+    print_statement(bloc, file_to_write_in)
+    print(')', file=file_to_write_in)
+
+
+def print_statement(bloc, file_to_write_in):
+    if bloc == ():
+        return
+
+    print('\t' + str(bloc[0]), file=file_to_write_in)
+    print_statement(bloc[1], file_to_write_in=file_to_write_in)
 
 
 # -------------------- MAIN --------------------
 
 yacc.yacc()
-write_in_compilation = False #False : On écrit dans la console - True : On écrit dans le fichier compilation.log
+write_in_compilation = False  # False : On écrit dans la console - True : On écrit dans le fichier compilation.log
 
 if len(sys.argv) >= 2:
     write_in_compilation = True

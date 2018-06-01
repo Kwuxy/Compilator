@@ -1,25 +1,24 @@
-Compilation begin on 2018-05-15 14:39:29 
+Compilation begin on 2018-06-01 09:43:39 
 
-program : [
-	('AND', ('<=', ('+', 1, 2), ('+', 3, 4)), ('==', ('*', 5, 6), 30)),
-	('OR', ('>', ('-', 1, 2), 3), ('!=', ('/', 10, 2), 5)),
-	('=', 'x', 'True'),
-	('OR', 'x', ('!=', ('-', 10, 1), 9)),
-	('if', ('<', 1, 2), [('=', 'y', 'True')], [('=', 'y', 'False')]),
-	('if', ('>', 1, 2), [('=', 'z', 'False')], [('=', 'z', 'True')]),
-	('if', ('<', 1, 2), [('if', 'True', [('=', 'developer', 20)])]),
-	('for', ('=', 'counter', 0), ('<', 'counter', 10), [('=', 'counter', ('+', 'counter', 1)), ('+', 'counter', 0)], [('=', 'a', 'counter'), ('=', 'b', 'False')]),
-	('for', ('=', 'counter', 0), ('<', 'counter', 3), [('=', 'counter', ('+', 'counter', 1))], [('=', 'c', 'counter')]),
-	('=', 'counter', 0),
-	('while', ('<', 'counter', 4), [('echo', ['counter', ('=', 'counter', ('+', 'counter', 1))])]),
-	('=', 'counter', 0),
-	('while', ('<', 'counter', 2), [('echo', ['counter', ('=', 'counter', ('+', 'counter', 1))])]),
-	('=', 'x', '"Hello"'),
-	('=', 'y', "'World'"),
-	('=', 'z', ('+', ('+', 'x', "' '"), 'y')),
-	('echo', ['"x :"', 'x', '" y :"', 'y', '" z :"', 'z']),
-]
-
+program : (
+	('AND', ('<=', ('+', 1, 2), ('+', 3, 4)), ('==', ('*', 5, 6), 30))
+	('OR', ('>', ('-', 1, 2), 3), ('!=', ('/', 10, 2), 5))
+	('=', 'x', 'True')
+	('OR', 'x', ('!=', ('-', 10, 1), 9))
+	('if', ('<', 1, 2), (('=', 'y', 'True'), ()), (('=', 'y', 'False'), ()))
+	('if', ('>', 1, 2), (('=', 'z', 'False'), ()), (('=', 'z', 'True'), ()))
+	('if', ('<', 1, 2), (('if', 'True', (('=', 'developer', 20), ())), ()))
+	('for', ('=', 'counter', 0), ('<', 'counter', 10), (('=', 'counter', ('+', 'counter', 1)), (('+', 'counter', 0), ())), (('=', 'a', 'counter'), (('=', 'b', 'False'), ())))
+	('for', ('=', 'counter', 0), ('<', 'counter', 3), (('=', 'counter', ('+', 'counter', 1)), ()), (('=', 'c', 'counter'), ()))
+	('=', 'counter', 0)
+	('while', ('<', 'counter', 4), (('echo', 'counter'), (('=', 'counter', ('+', 'counter', 1)), ())))
+	('=', 'counter', 0)
+	('while', ('<', 'counter', 2), (('echo', 'counter'), (('=', 'counter', ('+', 'counter', 1)), ())))
+	('=', 'x', '"Hello"')
+	('=', 'y', "'World'")
+	('=', 'z', ('+', ('+', 'x', "' '"), 'y'))
+	('echo', ('+', ('+', ('+', ('+', ('+', '"x : "', 'x'), '" y : "'), 'y'), '" z : "'), 'z'))
+)
 Statement number 1 :
 names : {
 }
@@ -56,7 +55,7 @@ Statement number 5 :
 names : {
 	x : True,
 }
-Evaluation : ('if', ('<', 1, 2), [('=', 'y', 'True')], [('=', 'y', 'False')]) : If executed 
+Evaluation : ('if', ('<', 1, 2), (('=', 'y', 'True'), ()), (('=', 'y', 'False'), ())) : If executed 
 
 
 Statement number 8 :
@@ -72,7 +71,7 @@ names : {
 	x : True,
 	y : True,
 }
-Evaluation : ('if', ('>', 1, 2), [('=', 'z', 'False')], [('=', 'z', 'True')]) : Else executed 
+Evaluation : ('if', ('>', 1, 2), (('=', 'z', 'False'), ()), (('=', 'z', 'True'), ())) : Else executed 
 
 
 Statement number 11 :
@@ -90,7 +89,7 @@ names : {
 	y : True,
 	z : True,
 }
-Evaluation : ('if', 'True', [('=', 'developer', 20)]) : If executed 
+Evaluation : ('if', 'True', (('=', 'developer', 20), ())) : If executed 
 
 
 Statement number 9 :
@@ -99,7 +98,7 @@ names : {
 	y : True,
 	z : True,
 }
-Evaluation : ('if', ('<', 1, 2), [('if', 'True', [('=', 'developer', 20)])]) : If executed 
+Evaluation : ('if', ('<', 1, 2), (('if', 'True', (('=', 'developer', 20), ())), ())) : If executed 
 
 
 Statement number 13 :
@@ -626,7 +625,7 @@ names : {
 	z : True,
 	developer : 20,
 }
-Evaluation : ('for', ('=', 'counter', 0), ('<', 'counter', 10), [('=', 'counter', ('+', 'counter', 1)), ('+', 'counter', 0)], [('=', 'a', 'counter'), ('=', 'b', 'False')]) : For executed 
+Evaluation : ('for', ('=', 'counter', 0), ('<', 'counter', 10), (('=', 'counter', ('+', 'counter', 1)), (('+', 'counter', 0), ())), (('=', 'a', 'counter'), (('=', 'b', 'False'), ()))) : For executed 
 
 
 Statement number 54 :
@@ -722,7 +721,7 @@ names : {
 	a : 9,
 	b : False,
 }
-Evaluation : ('for', ('=', 'counter', 0), ('<', 'counter', 3), [('=', 'counter', ('+', 'counter', 1))], [('=', 'c', 'counter')]) : For executed 
+Evaluation : ('for', ('=', 'counter', 0), ('<', 'counter', 3), (('=', 'counter', ('+', 'counter', 1)), ()), (('=', 'c', 'counter'), ())) : For executed 
 
 
 Statement number 60 :
@@ -750,10 +749,24 @@ names : {
 	b : False,
 	c : 2,
 }
-Evaluation : ('echo', ['counter', ('=', 'counter', ('+', 'counter', 1))]) : echo executed 
+Evaluation : ('echo', 'counter') : echo executed 
 
 
 Statement number 63 :
+names : {
+	x : True,
+	y : True,
+	z : True,
+	developer : 20,
+	counter : 0,
+	a : 9,
+	b : False,
+	c : 2,
+}
+Evaluation : ('=', 'counter', ('+', 'counter', 1)) : counter <--- 1 
+
+
+Statement number 64 :
 names : {
 	x : True,
 	y : True,
@@ -764,10 +777,24 @@ names : {
 	b : False,
 	c : 2,
 }
-Evaluation : ('echo', ['counter', ('=', 'counter', ('+', 'counter', 1))]) : echo executed 
+Evaluation : ('echo', 'counter') : echo executed 
 
 
-Statement number 64 :
+Statement number 65 :
+names : {
+	x : True,
+	y : True,
+	z : True,
+	developer : 20,
+	counter : 1,
+	a : 9,
+	b : False,
+	c : 2,
+}
+Evaluation : ('=', 'counter', ('+', 'counter', 1)) : counter <--- 2 
+
+
+Statement number 66 :
 names : {
 	x : True,
 	y : True,
@@ -778,10 +805,24 @@ names : {
 	b : False,
 	c : 2,
 }
-Evaluation : ('echo', ['counter', ('=', 'counter', ('+', 'counter', 1))]) : echo executed 
+Evaluation : ('echo', 'counter') : echo executed 
 
 
-Statement number 65 :
+Statement number 67 :
+names : {
+	x : True,
+	y : True,
+	z : True,
+	developer : 20,
+	counter : 2,
+	a : 9,
+	b : False,
+	c : 2,
+}
+Evaluation : ('=', 'counter', ('+', 'counter', 1)) : counter <--- 3 
+
+
+Statement number 68 :
 names : {
 	x : True,
 	y : True,
@@ -792,7 +833,21 @@ names : {
 	b : False,
 	c : 2,
 }
-Evaluation : ('echo', ['counter', ('=', 'counter', ('+', 'counter', 1))]) : echo executed 
+Evaluation : ('echo', 'counter') : echo executed 
+
+
+Statement number 69 :
+names : {
+	x : True,
+	y : True,
+	z : True,
+	developer : 20,
+	counter : 3,
+	a : 9,
+	b : False,
+	c : 2,
+}
+Evaluation : ('=', 'counter', ('+', 'counter', 1)) : counter <--- 4 
 
 
 Statement number 61 :
@@ -806,10 +861,10 @@ names : {
 	b : False,
 	c : 2,
 }
-Evaluation : ('while', ('<', 'counter', 4), [('echo', ['counter', ('=', 'counter', ('+', 'counter', 1))])]) : While executed 
+Evaluation : ('while', ('<', 'counter', 4), (('echo', 'counter'), (('=', 'counter', ('+', 'counter', 1)), ()))) : While executed 
 
 
-Statement number 66 :
+Statement number 70 :
 names : {
 	x : True,
 	y : True,
@@ -823,7 +878,7 @@ names : {
 Evaluation : ('=', 'counter', 0) : counter <--- 0 
 
 
-Statement number 68 :
+Statement number 72 :
 names : {
 	x : True,
 	y : True,
@@ -834,10 +889,24 @@ names : {
 	b : False,
 	c : 2,
 }
-Evaluation : ('echo', ['counter', ('=', 'counter', ('+', 'counter', 1))]) : echo executed 
+Evaluation : ('echo', 'counter') : echo executed 
 
 
-Statement number 69 :
+Statement number 73 :
+names : {
+	x : True,
+	y : True,
+	z : True,
+	developer : 20,
+	counter : 0,
+	a : 9,
+	b : False,
+	c : 2,
+}
+Evaluation : ('=', 'counter', ('+', 'counter', 1)) : counter <--- 1 
+
+
+Statement number 74 :
 names : {
 	x : True,
 	y : True,
@@ -848,10 +917,24 @@ names : {
 	b : False,
 	c : 2,
 }
-Evaluation : ('echo', ['counter', ('=', 'counter', ('+', 'counter', 1))]) : echo executed 
+Evaluation : ('echo', 'counter') : echo executed 
 
 
-Statement number 67 :
+Statement number 75 :
+names : {
+	x : True,
+	y : True,
+	z : True,
+	developer : 20,
+	counter : 1,
+	a : 9,
+	b : False,
+	c : 2,
+}
+Evaluation : ('=', 'counter', ('+', 'counter', 1)) : counter <--- 2 
+
+
+Statement number 71 :
 names : {
 	x : True,
 	y : True,
@@ -862,10 +945,10 @@ names : {
 	b : False,
 	c : 2,
 }
-Evaluation : ('while', ('<', 'counter', 2), [('echo', ['counter', ('=', 'counter', ('+', 'counter', 1))])]) : While executed 
+Evaluation : ('while', ('<', 'counter', 2), (('echo', 'counter'), (('=', 'counter', ('+', 'counter', 1)), ()))) : While executed 
 
 
-Statement number 70 :
+Statement number 76 :
 names : {
 	x : True,
 	y : True,
@@ -879,7 +962,7 @@ names : {
 Evaluation : ('=', 'x', '"Hello"') : x <--- Hello 
 
 
-Statement number 71 :
+Statement number 77 :
 names : {
 	x : Hello,
 	y : True,
@@ -893,7 +976,7 @@ names : {
 Evaluation : ('=', 'y', "'World'") : y <--- World 
 
 
-Statement number 72 :
+Statement number 78 :
 names : {
 	x : Hello,
 	y : World,
@@ -907,7 +990,7 @@ names : {
 Evaluation : ('=', 'z', ('+', ('+', 'x', "' '"), 'y')) : z <--- Hello World 
 
 
-Statement number 73 :
+Statement number 79 :
 names : {
 	x : Hello,
 	y : World,
@@ -918,7 +1001,7 @@ names : {
 	b : False,
 	c : 2,
 }
-Evaluation : ('echo', ['"x :"', 'x', '" y :"', 'y', '" z :"', 'z']) : echo executed 
+Evaluation : ('echo', ('+', ('+', ('+', ('+', ('+', '"x : "', 'x'), '" y : "'), 'y'), '" z : "'), 'z')) : echo executed 
 
 
-Compilation executed in 0.0752 seconds
+Compilation executed in 0.0638 seconds
