@@ -27,7 +27,7 @@ tokens = (
     'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'MODULO', 'EQUALS',
     'IS_BIGGER', 'IS_BIGGER_EQUALS', 'IS_SMALLER', 'IS_SMALLER_EQUALS', 'IS_EQUALS', 'IS_DIFFERENT',
     'LPAREN', 'RPAREN', 'SEMICOLON', 'DOT', 'COMA',
-    'IF', 'ELSE', 'END', 'AT', 'FOR', 'WHILE', 'ECHO', 'DEF', 'CALL',
+    'IF', 'ELSE', 'END', 'AT', 'FOR', 'WHILE', 'ECHO', 'DEF', 'CALL', 'RETURN',
     'STRING'
 )
 
@@ -71,13 +71,14 @@ t_WHILE = r'while'
 t_ECHO = r'echo'
 t_DEF = r'def'
 t_CALL = r'call'
+t_RETURN = r'return'
 
 # Boolean values
 t_TRUE = r'True'
 t_FALSE = r'False'
 
 # Variables
-t_NAME = r'((?!(AND|OR|True|False|if|else|end|for|while|echo|def|call))([a-zA-Z_][a-zA-Z0-9_]*))'
+t_NAME = r'((?!(AND|OR|True|False|if|else|end|for|while|echo|def|call|return))([a-zA-Z_][a-zA-Z0-9_]*))'
 
 # String
 t_STRING = r'(\'[^\']*\'|"[^\"]*")'
@@ -178,7 +179,8 @@ def p_instruction(p):
     """instruction : expression
                    | assignment
                    | iterative_exp
-                   | echo_exp"""
+                   | echo_exp
+                   | return"""
     p[0] = p[1]
 
 
@@ -209,6 +211,11 @@ def p_function_def(p):
 def p_function_call(p):
     """function_call : CALL NAME LPAREN arg_list RPAREN"""
     p[0] = ('call', p[2], p[4])
+
+
+def p_return(p):
+    """return : RETURN expression"""
+    p[0] = ('return', p[2])
 
 
 def p_arg_list(p):
@@ -387,9 +394,15 @@ def eval_bloc(bloc):
         print_beautiful_dict(functions, "functions :", file_for_log)
         print_beautiful_list(function_stack, "function_stack :", file_for_log)
 
-        print('\tEvaluation :', str(bloc[0]), ':', str(eval_statement(bloc[0])), "\n\n\n", file=file_for_log)
+        return_val = eval_statement(bloc[0])
+
+        print('\tEvaluation :', str(bloc[0]), ':', str(return_val), "\n\n\n", file=file_for_log)
 
         file_for_log.close()
+
+        if bloc[0][0] == "return":
+            print(return_val, file=sys.stderr)
+            return return_val
     else:
         print(str(eval_statement(bloc[0])))
 
@@ -420,15 +433,17 @@ def eval_statement(t):
         return eval_def_exp(t)
     elif t[0] == t_CALL:
         return eval_call_exp(t)
+    elif t[0] == t_RETURN:
+        return eval_return_exp(t)
     else:
         print(t)
         return "Unknown command '" + t[0] + "'"
 
 
 def eval_arithmetic_exp(t):
+    val1 = eval_statement(t[1])
+    val2 = eval_statement(t[2])
     if re.match(t_PLUS, t[0]):
-        val1 = eval_statement(t[1])
-        val2 = eval_statement(t[2])
         if type(val1) == str or type(val2) == str:
             p1 = val1 if type(val1) == str else str(val1)
             p2 = val2 if type(val2) == str else str(val2)
@@ -436,20 +451,20 @@ def eval_arithmetic_exp(t):
         else:
             return val1 + val2
     if t[0] == t_MINUS:
-        return eval_statement(t[1]) - eval_statement(t[2])
+        return val1 - val2
     if re.match(t_TIMES, t[0]):
-        if xor(type(t[1]) == str, type(t[2]) == str):
-            return eval_statement(t[1]) * eval_statement(t[2])
+        if type(val1) == str and type(val2) == str:
+            return "Error operation '*' impossible between " + str(type(val1)) + \
+                   " and " + str(type(val2))
         else:
-            return "Error operation '*' impossible between " + str(type(t[1])) + \
-                   " and " + str(type(t[2]))
+            return val1 * val2
     if t[0] == t_DIVIDE:
         # Si une des deux variable est une string
-        if type(t[1]) == str or type(t[1]) == str:
+        if type(val1) == str or type(val2) == str:
             return "Error : Cannot divide string"
-        return eval_statement(t[1]) / eval_statement(t[2])
+        return val1 / val2
     if re.match(t_MODULO, t[0]):
-        return eval_statement(t[1]) % eval_statement(t[2])
+        return val1 % val2
     else:
         return "An error has occurred, char '" + t[0] + "' unknown"
 
@@ -548,9 +563,14 @@ def eval_call_exp(t):
         except IndexError:
             print("Missing argument", arg, "while calling function '%s'" % t[1], file=sys.stderr)
             sys.exit(1)
-    eval_bloc(functions[t[1]][1])
+    return_val = eval_bloc(functions[t[1]][1])
     function_stack.pop()
-    return "Function '%s' executed" % t[1]
+    return return_val
+
+
+def eval_return_exp(t):
+    return eval_statement(t[1])
+
 
 # -------------------- DISPLAY --------------------
 

@@ -5,11 +5,8 @@ A voir en dernier recours :
 TODO :
     - Precedence
     - Fonctions:
-        + Fonctions standard
-        + Gérer le scope des variables dans la fonction
         + Vérifier fonctionnement des fonctions récursives
         + Return statement
-        + Add params in function
     - Tableaux
     - Commentaires
 
@@ -19,3 +16,7 @@ DONE :
     - Mettre les blocs sous forme d'arbre
         + remplacer les listes par des tuples fils gauche statement fils droit suite du bloc
     - Revoir l'affichage du graphe de l'ensemble du bloc
+    - Fonctions :
+        + Fonctions standard
+        + Gérer le scope des variables dans la fonction
+        + Add params in function

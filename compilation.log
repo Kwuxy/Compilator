@@ -1,15 +1,16 @@
-Compilation begin on 2018-06-02 22:09:42 
+Compilation begin on 2018-06-02 23:14:57 
 
 program : (
 	('def', 'test1', [], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ()))))
 	('def', 'test2', ['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ())))
+	('def', 'mul', ['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ())))
 	('echo', '"En dehors de la fonction"')
 	('call', 'test1', [])
 	('call', 'test2', [1, 3])
 	('call', 'test2', [5, '"Hello"'])
-	('call', 'test2', ['"une seule variable"'])
 	('call', 'test1', [])
-	('echo', '"Re dehors"')
+	('=', 'operation', ('call', 'mul', [3, 5]))
+	('echo', ('+', '"Re dehors, operation : "', 'operation'))
 )
 Statement number 1 :
 functions : {
@@ -43,14 +44,29 @@ function_stack : [
 	{},
 ]
 
+	Evaluation : ('def', 'mul', ['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))) : function added to scope 
+
+
+
+Statement number 4 :
+functions : {
+	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
+	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
+}
+function_stack : [
+	{},
+]
+
 	Evaluation : ('echo', '"En dehors de la fonction"') : echo executed 
 
 
 
-Statement number 5 :
+Statement number 6 :
 functions : {
 	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
 	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
 }
 function_stack : [
 	{},
@@ -61,10 +77,11 @@ function_stack : [
 
 
 
-Statement number 6 :
+Statement number 7 :
 functions : {
 	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
 	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
 }
 function_stack : [
 	{},
@@ -75,10 +92,11 @@ function_stack : [
 
 
 
-Statement number 7 :
+Statement number 8 :
 functions : {
 	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
 	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
 }
 function_stack : [
 	{},
@@ -89,23 +107,25 @@ function_stack : [
 
 
 
-Statement number 4 :
+Statement number 5 :
 functions : {
 	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
 	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
 }
 function_stack : [
 	{},
 ]
 
-	Evaluation : ('call', 'test1', []) : Function 'test1' executed 
+	Evaluation : ('call', 'test1', []) : None 
 
 
 
-Statement number 9 :
+Statement number 10 :
 functions : {
 	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
 	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
 }
 function_stack : [
 	{},
@@ -116,10 +136,11 @@ function_stack : [
 
 
 
-Statement number 10 :
+Statement number 11 :
 functions : {
 	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
 	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
 }
 function_stack : [
 	{},
@@ -130,23 +151,25 @@ function_stack : [
 
 
 
-Statement number 8 :
+Statement number 9 :
 functions : {
 	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
 	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
 }
 function_stack : [
 	{},
 ]
 
-	Evaluation : ('call', 'test2', [1, 3]) : Function 'test2' executed 
+	Evaluation : ('call', 'test2', [1, 3]) : None 
 
 
 
-Statement number 12 :
+Statement number 13 :
 functions : {
 	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
 	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
 }
 function_stack : [
 	{},
@@ -157,10 +180,11 @@ function_stack : [
 
 
 
-Statement number 13 :
+Statement number 14 :
 functions : {
 	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
 	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
 }
 function_stack : [
 	{},
@@ -171,25 +195,135 @@ function_stack : [
 
 
 
-Statement number 11 :
+Statement number 12 :
 functions : {
 	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
 	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
 }
 function_stack : [
 	{},
 ]
 
-	Evaluation : ('call', 'test2', [5, '"Hello"']) : Function 'test2' executed 
+	Evaluation : ('call', 'test2', [5, '"Hello"']) : None 
 
 
 
-Statement number 14 :
+Statement number 16 :
 functions : {
 	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
 	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
+}
+function_stack : [
+	{},
+	{},
+]
+
+	Evaluation : ('echo', '"Dans test1"') : echo executed 
+
+
+
+Statement number 17 :
+functions : {
+	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
+	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
+}
+function_stack : [
+	{},
+	{},
+]
+
+	Evaluation : ('=', 'x', 10) : x <--- 10 
+
+
+
+Statement number 18 :
+functions : {
+	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
+	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
+}
+function_stack : [
+	{},
+	{'x': 10},
+]
+
+	Evaluation : ('echo', ('+', '"Dans test1 again, x = "', 'x')) : echo executed 
+
+
+
+Statement number 15 :
+functions : {
+	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
+	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
 }
 function_stack : [
 	{},
 ]
 
+	Evaluation : ('call', 'test1', []) : None 
+
+
+
+Statement number 20 :
+functions : {
+	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
+	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
+}
+function_stack : [
+	{},
+	{'var1': 3, 'var2': 5},
+]
+
+	Evaluation : ('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')) : echo executed 
+
+
+
+Statement number 21 :
+functions : {
+	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
+	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
+}
+function_stack : [
+	{},
+	{'var1': 3, 'var2': 5},
+]
+
+	Evaluation : ('return', ('*', 'var1', 'var2')) : 15 
+
+
+
+Statement number 19 :
+functions : {
+	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
+	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
+}
+function_stack : [
+	{},
+]
+
+	Evaluation : ('=', 'operation', ('call', 'mul', [3, 5])) : operation <--- None 
+
+
+
+Statement number 22 :
+functions : {
+	test1 : ([], (('echo', '"Dans test1"'), (('=', 'x', 10), (('echo', ('+', '"Dans test1 again, x = "', 'x')), ())))),
+	test2 : (['var1', 'var2'], (('=', 'local', 999), (('echo', ('+', ('+', ('+', ('+', ('+', '"Dans test2, local : "', 'local'), '" var1 : "'), 'var1'), '" var2 : "'), 'var2')), ()))),
+	mul : (['var1', 'var2'], (('echo', ('+', ('+', ('+', ('+', '"Dans mul("', 'var1'), '", "'), 'var2'), '")"')), (('return', ('*', 'var1', 'var2')), ()))),
+}
+function_stack : [
+	{'operation': None},
+]
+
+	Evaluation : ('echo', ('+', '"Re dehors, operation : "', 'operation')) : echo executed 
+
+
+
+Compilation executed in 0.0340 seconds
