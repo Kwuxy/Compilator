@@ -166,9 +166,7 @@ def p_bloc(p):
 
 def p_statement_expr(p):
     """statement : instruction SEMICOLON
-                 | instruction
-                 | function SEMICOLON
-                 | function"""
+                 | instruction"""
     p[0] = p[1]
 
 
@@ -200,7 +198,8 @@ def p_echo_exp(p):
 def p_expression(p):
     """expression : boolean_exp
                   | arithmetic_exp
-                  | conditional_exp"""
+                  | conditional_exp
+                  | function"""
     p[0] = p[1]
 
 
@@ -399,14 +398,14 @@ def eval_statement(t):
 
 def eval_arithmetic_exp(t):
     if re.match(t_PLUS, t[0]):
-        if type(t[1]) == str or type(t[2]) == str:
-            val1 = eval_statement(t[1])
-            val2 = eval_statement(t[2])
+        val1 = eval_statement(t[1])
+        val2 = eval_statement(t[2])
+        if type(val1) == str or type(val2) == str:
             p1 = val1 if type(val1) == str else str(val1)
             p2 = val2 if type(val2) == str else str(val2)
             return p1 + p2
         else:
-            return eval_statement(t[1]) + eval_statement(t[2])
+            return val1 + val2
     if t[0] == t_MINUS:
         return eval_statement(t[1]) - eval_statement(t[2])
     if re.match(t_TIMES, t[0]):
