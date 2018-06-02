@@ -1,15 +1,21 @@
-- Revoir la façon dont sont gérées les variables
-- Done : Mettre les blocs sous forme d'arbre
-    + Done : remplacer les listes par des tuples fils gauche statement fils droit suite du bloc
-- Done : Revoir l'affichage du graphe de l'ensemble du bloc
-- Precedence
-- Fonctions:
-    + Fonctions standard
-    + Gérer le scope des variables dans la fonction
-    + Vérifier fonctionnement des fonctions récursives
-    + Return statement
-
-
 A voir en dernier recours :
     - POO
     - Pointeurs
+
+TODO :
+    - Precedence
+    - Fonctions:
+        + Fonctions standard
+        + Gérer le scope des variables dans la fonction
+        + Vérifier fonctionnement des fonctions récursives
+        + Return statement
+        + Add params in function
+    - Tableaux
+    - Commentaires
+
+
+DONE :
+    - Revoir la façon dont sont gérées les variables
+    - Mettre les blocs sous forme d'arbre
+        + remplacer les listes par des tuples fils gauche statement fils droit suite du bloc
+    - Revoir l'affichage du graphe de l'ensemble du bloc

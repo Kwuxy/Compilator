@@ -26,8 +26,8 @@ tokens = (
     'NAME', 'NUMBER',
     'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'MODULO', 'EQUALS',
     'IS_BIGGER', 'IS_BIGGER_EQUALS', 'IS_SMALLER', 'IS_SMALLER_EQUALS', 'IS_EQUALS', 'IS_DIFFERENT',
-    'LPAREN', 'RPAREN', 'SEMICOLON', 'DOT',
-    'IF', 'ELSE', 'END', 'AT', 'FOR', 'WHILE', 'ECHO', 'DEF',
+    'LPAREN', 'RPAREN', 'SEMICOLON', 'DOT', 'COMA',
+    'IF', 'ELSE', 'END', 'AT', 'FOR', 'WHILE', 'ECHO', 'DEF', 'CALL',
     'STRING'
 )
 
@@ -60,6 +60,7 @@ t_RPAREN = r'\)'
 t_SEMICOLON = r';'
 t_AT = r'@'
 t_DOT = r'\.'
+t_COMA = r','
 
 # Function delimiters
 t_IF = r'if'
@@ -69,13 +70,14 @@ t_FOR = r'for'
 t_WHILE = r'while'
 t_ECHO = r'echo'
 t_DEF = r'def'
+t_CALL = r'call'
 
 # Boolean values
 t_TRUE = r'True'
 t_FALSE = r'False'
 
 # Variables
-t_NAME = r'((?!(AND|OR|True|False|if|else|end|for|while|echo|def))([a-zA-Z_][a-zA-Z0-9_]*))'
+t_NAME = r'((?!(AND|OR|True|False|if|else|end|for|while|echo|def|call))([a-zA-Z_][a-zA-Z0-9_]*))'
 
 # String
 t_STRING = r'(\'[^\']*\'|"[^\"]*")'
@@ -180,13 +182,6 @@ def p_instruction(p):
     p[0] = p[1]
 
 
-# -------------------- FUNCTION DEFINITION --------------------
-
-def p_function(p):
-    """function : DEF NAME AT bloc END"""
-    p[0] = ('def', p[2], p[4])
-
-
 # -------------------- ECHO EXPRESSION --------------------
 
 def p_echo_exp(p):
@@ -199,8 +194,34 @@ def p_expression(p):
     """expression : boolean_exp
                   | arithmetic_exp
                   | conditional_exp
-                  | function"""
+                  | function_def
+                  | function_call"""
     p[0] = p[1]
+
+
+# -------------------- FUNCTION DEFINITION --------------------
+
+def p_function_def(p):
+    """function_def : DEF NAME LPAREN arg_list RPAREN AT bloc END"""
+    p[0] = ('def', p[2], p[4], p[7])
+
+
+def p_function_call(p):
+    """function_call : CALL NAME LPAREN arg_list RPAREN"""
+    p[0] = ('call', p[2], p[4])
+
+
+def p_arg_list(p):
+    """arg_list : arithmetic_exp COMA arg_list
+                | arithmetic_exp
+                | empty"""
+    if len(p) == 2:
+        if p[1] is not None:
+            p[0] = [p[1]]
+        else:
+            p[0] = []
+    else:
+        p[0] = [p[1]] + p[3]
 
 
 # -------------------- BOOLEAN EXPRESSION --------------------
@@ -335,10 +356,16 @@ def p_while_exp_minimal(p):
     p[0] = ('while', p[2], p[3])
 
 
+# -------------------- EMPTY VALUE --------------------
+
+def p_empty(p):
+    """empty : """
+
+
 # -------------------- ERROR --------------------
 
 def p_error(p):
-    print("Syntax error at '%s'" % p.value)
+    print("Syntax error at '%s'" % p.value, file=sys.stderr)
 
 
 def error(string):
@@ -356,11 +383,11 @@ def eval_bloc(bloc):
         file_for_log = open('compilation.log', 'a')
         print("Statement number", statement_counter, ":", file=file_for_log)
         statement_counter = statement_counter + 1
-        print_beautiful_dict(names, "names :", file_for_log)
+        # print_beautiful_dict(names, "names :", file_for_log)
         print_beautiful_dict(functions, "functions :", file_for_log)
         print_beautiful_list(function_stack, "function_stack :", file_for_log)
 
-        print('Evaluation :', str(bloc[0]), ':', str(eval_statement(bloc[0])), "\n\n", file=file_for_log)
+        print('\tEvaluation :', str(bloc[0]), ':', str(eval_statement(bloc[0])), "\n\n\n", file=file_for_log)
 
         file_for_log.close()
     else:
@@ -391,6 +418,8 @@ def eval_statement(t):
         return eval_echo_exp(t)
     elif t[0] == t_DEF:
         return eval_def_exp(t)
+    elif t[0] == t_CALL:
+        return eval_call_exp(t)
     else:
         print(t)
         return "Unknown command '" + t[0] + "'"
@@ -464,17 +493,10 @@ def eval_value(val):
             return val[1:-1]
         else:
             try:  # Si c'est une variable
-                # var = names[val]
                 var = function_stack[-1][val]
             except LookupError:
-                try:  # Si c'est un appel de fonction
-                    function_stack.append({})
-                    eval_bloc(functions[val])
-                    function_stack.pop()
-                    var = "Function '%s' executed" % val
-                except LookupError:  # Si c'est ni un appel de fonction ni une variable
-                    print("Unknown string '%s' as variable or function" % val, file=sys.stderr)
-                    var = 0
+                print("Unknown variable '%s' in current scope" % val)
+                var = 0
             return var
     else:
         return val
@@ -512,11 +534,26 @@ def eval_echo_exp(t):
 
 
 def eval_def_exp(t):
-    functions[t[1]] = t[2]
+    functions[t[1]] = (t[2], t[3])
     return "function added to scope"
 
 
+def eval_call_exp(t):
+    function_stack.append({})
+    counter = 0
+    for arg in functions[t[1]][0]:
+        try:
+            function_stack[-1][arg] = t[2][counter]
+            counter += 1
+        except IndexError:
+            print("Missing argument", arg, "while calling function '%s'" % t[1], file=sys.stderr)
+            sys.exit(1)
+    eval_bloc(functions[t[1]][1])
+    function_stack.pop()
+    return "Function '%s' executed" % t[1]
+
 # -------------------- DISPLAY --------------------
+
 
 def get_decal(decal, car):
     res = ""
