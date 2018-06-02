@@ -27,7 +27,7 @@ tokens = (
     'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'MODULO', 'EQUALS',
     'IS_BIGGER', 'IS_BIGGER_EQUALS', 'IS_SMALLER', 'IS_SMALLER_EQUALS', 'IS_EQUALS', 'IS_DIFFERENT',
     'LPAREN', 'RPAREN', 'SEMICOLON', 'DOT',
-    'IF', 'ELSE', 'END', 'AT', 'FOR', 'WHILE', 'ECHO',
+    'IF', 'ELSE', 'END', 'AT', 'FOR', 'WHILE', 'ECHO', 'DEF',
     'STRING'
 )
 
@@ -68,13 +68,14 @@ t_END = r'end'
 t_FOR = r'for'
 t_WHILE = r'while'
 t_ECHO = r'echo'
+t_DEF = r'def'
 
 # Boolean values
 t_TRUE = r'True'
 t_FALSE = r'False'
 
 # Variables
-t_NAME = r'((?!(AND|OR|True|False|if|else|end|for|while|echo))([a-zA-Z_][a-zA-Z0-9_]*))'
+t_NAME = r'((?!(AND|OR|True|False|if|else|end|for|while|echo|def))([a-zA-Z_][a-zA-Z0-9_]*))'
 
 # String
 t_STRING = r'(\'[^\']*\'|"[^\"]*")'
@@ -114,6 +115,8 @@ precedence = (
 
 # dictionary
 names = {}
+functions = {}
+function_stack = []
 dict_comparison_operand = {'<', '<=', '>', '>=', '==', '!='}
 dict_arithmetic_operand = {'+', '-', '*', '/', '%'}
 dict_boolean_operand = {'AND', 'OR'}
@@ -121,10 +124,17 @@ dict_boolean_operand = {'AND', 'OR'}
 
 # -------------------- PROGRAM --------------------
 def p_program(p):
-    """program : bloc"""
+    """program : bloc """
     p[0] = p[1]
 
     print(p[0])
+
+    # print_bloc_as_tree_in_command_line(p[0], 0, ' ')
+    # print("names :", names)
+    print_bloc_as_tree_in_graph(p[0])
+
+    # Init main function
+    function_stack.append({})
 
     global write_in_compilation
 
@@ -141,10 +151,6 @@ def p_program(p):
     else:
         eval_bloc(p[0])
 
-    # print_bloc_as_tree_in_command_line(p[0], 0, ' ')
-    # print("names :", names)
-    print_bloc_as_tree_in_graph(p[0])
-
 
 # -------------------- BLOC --------------------
 def p_bloc(p):
@@ -160,7 +166,9 @@ def p_bloc(p):
 
 def p_statement_expr(p):
     """statement : instruction SEMICOLON
-                 | instruction"""
+                 | instruction
+                 | function SEMICOLON
+                 | function"""
     p[0] = p[1]
 
 
@@ -172,6 +180,13 @@ def p_instruction(p):
                    | iterative_exp
                    | echo_exp"""
     p[0] = p[1]
+
+
+# -------------------- FUNCTION DEFINITION --------------------
+
+def p_function(p):
+    """function : DEF NAME AT bloc END"""
+    p[0] = ('def', p[2], p[4])
 
 
 # -------------------- ECHO EXPRESSION --------------------
@@ -281,19 +296,12 @@ def p_float(p):
 
 def p_variable(p):
     """variable : NAME"""
-    # p[0] = p[1]
-    try:
-        # p[0] = names[p[1]]
-        p[0] = p[1]
-    except LookupError:
-        print("Undefined name '%s'" % p[1])
-        p[0] = 0
+    p[0] = p[1]
 
 
 def p_assignment(p):
     """assignment : NAME EQUALS expression"""
     p[0] = (p[2], p[1], p[3])
-    # names[p[1]] = p[3]
 
 
 # -------------------- CONDITIONAL EXPRESSION --------------------
@@ -350,6 +358,8 @@ def eval_bloc(bloc):
         print("Statement number", statement_counter, ":", file=file_for_log)
         statement_counter = statement_counter + 1
         print_beautiful_dict(names, "names :", file_for_log)
+        print_beautiful_dict(functions, "functions :", file_for_log)
+        print_beautiful_list(function_stack, "function_stack :", file_for_log)
 
         print('Evaluation :', str(bloc[0]), ':', str(eval_statement(bloc[0])), "\n\n", file=file_for_log)
 
@@ -380,6 +390,8 @@ def eval_statement(t):
         return eval_while_exp(t)
     elif t[0] == t_ECHO:
         return eval_echo_exp(t)
+    elif t[0] == t_DEF:
+        return eval_def_exp(t)
     else:
         print(t)
         return "Unknown command '" + t[0] + "'"
@@ -387,7 +399,14 @@ def eval_statement(t):
 
 def eval_arithmetic_exp(t):
     if re.match(t_PLUS, t[0]):
-        return eval_statement(t[1]) + eval_statement(t[2])
+        if type(t[1]) == str or type(t[2]) == str:
+            val1 = eval_statement(t[1])
+            val2 = eval_statement(t[2])
+            p1 = val1 if type(val1) == str else str(val1)
+            p2 = val2 if type(val2) == str else str(val2)
+            return p1 + p2
+        else:
+            return eval_statement(t[1]) + eval_statement(t[2])
     if t[0] == t_MINUS:
         return eval_statement(t[1]) - eval_statement(t[2])
     if re.match(t_TIMES, t[0]):
@@ -431,7 +450,8 @@ def eval_comparison_exp(t):
 
 def eval_assignment_exp(t):
     val = eval_statement(t[2])
-    names[t[1]] = val
+    # names[t[1]] = val
+    function_stack[-1][t[1]] = val
     return str(t[1]) + ' <--- ' + str(val)
 
 
@@ -443,14 +463,20 @@ def eval_value(val):
     elif type(val) == str:
         if val[0] == '\"' or val[0] == '\'':  # Si c'est une string
             return val[1:-1]
-        else:  # Si c'est une variable
-            # try:
-            #    var = names[val]
-            # except LookupError:
-            #    print("Undefined name '%s'" % p[1])
-            #    var = 0
-            # return var
-            return names[val]
+        else:
+            try:  # Si c'est une variable
+                # var = names[val]
+                var = function_stack[-1][val]
+            except LookupError:
+                try:  # Si c'est un appel de fonction
+                    function_stack.append({})
+                    eval_bloc(functions[val])
+                    function_stack.pop()
+                    var = "Function '%s' executed" % val
+                except LookupError:  # Si c'est ni un appel de fonction ni une variable
+                    print("Unknown string '%s' as variable or function" % val, file=sys.stderr)
+                    var = 0
+            return var
     else:
         return val
 
@@ -484,6 +510,11 @@ def eval_echo_exp(t):
     res = str(eval_statement(t[1])) + " "
     print(res)
     return "echo executed"
+
+
+def eval_def_exp(t):
+    functions[t[1]] = t[2]
+    return "function added to scope"
 
 
 # -------------------- DISPLAY --------------------
