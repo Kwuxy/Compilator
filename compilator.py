@@ -400,13 +400,13 @@ def eval_bloc(bloc):
 
         file_for_log.close()
 
-        if bloc[0][0] == "return":
+        if bloc[0][0] == t_RETURN:
             print(return_val, file=sys.stderr)
             return return_val
     else:
         print(str(eval_statement(bloc[0])))
 
-    eval_bloc(bloc[1])
+    return eval_bloc(bloc[1])
 
 
 def eval_statement(t):
