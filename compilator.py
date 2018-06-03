@@ -382,8 +382,17 @@ def p_comment(p):
 
 
 def p_inline_comment(p):
-    """inline_comment : INLINE_COMMENT NAME"""
+    """inline_comment : INLINE_COMMENT sentence"""
     p[0] = (t_INLINE_COMMENT, p[2])
+
+
+def p_sentence(p):
+    """sentence : NAME sentence
+                | NAME"""
+    if len(p) == 2:
+        p[0] = p[1]
+    else:
+        p[0] = p[1] + ' ' + p[2]
 
 
 # -------------------- EMPTY VALUE --------------------

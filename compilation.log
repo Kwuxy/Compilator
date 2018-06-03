@@ -1,11 +1,12 @@
-Compilation begin on 2018-06-03 14:36:57 
+Compilation begin on 2018-06-03 14:56:47 
 
 program : (
 	('def', 'factor', ['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))
 	('echo', '"Debut programme"')
 	('echo', ('+', '"factor(3) = "', ('call', 'factor', [3])))
-	('~', 'Comment1')
+	('~', 'Comment1 comment2 inline_comment')
 	('echo', ('+', '"factor(5) = "', ('call', 'factor', [5])))
+	('~', 'Comment on a second line')
 	('echo', '"Fin programme"')
 )
 Statement number 1 :
@@ -135,7 +136,7 @@ function_stack : [
 	{},
 ]
 
-	Evaluation : ('~', 'Comment1') : Ignoring inline comment 
+	Evaluation : ('~', 'Comment1 comment2 inline_comment') : Ignoring inline comment 
 
 
 
@@ -309,8 +310,20 @@ function_stack : [
 	{},
 ]
 
+	Evaluation : ('~', 'Comment on a second line') : Ignoring inline comment 
+
+
+
+Statement number 23 :
+functions : {
+	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+}
+function_stack : [
+	{},
+]
+
 	Evaluation : ('echo', '"Fin programme"') : echo executed 
 
 
 
-Compilation executed in 0.0827 seconds
+Compilation executed in 0.0305 seconds

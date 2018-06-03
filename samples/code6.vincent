@@ -7,6 +7,6 @@ def factor(val) @
 end
 
 echo "Debut programme"
-echo "factor(3) = " + call factor(3) ~ Comment1
-echo "factor(5) = " + call factor(5)
+echo "factor(3) = " + call factor(3) ~ Comment1 comment2 inline_comment
+echo "factor(5) = " + call factor(5) ~ Comment on a second line
 echo "Fin programme"
