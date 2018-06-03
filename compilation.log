@@ -1,4 +1,4 @@
-Compilation begin on 2018-06-03 09:18:07 
+Compilation begin on 2018-06-03 09:27:31 
 
 program : (
 	('def', 'factor', ['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))
@@ -300,4 +300,4 @@ function_stack : [
 
 
 
-Compilation executed in 0.0661 seconds
+Compilation executed in 0.0436 seconds

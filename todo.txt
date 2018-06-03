@@ -4,9 +4,6 @@ A voir en dernier recours :
 
 TODO :
     - Precedence
-    - Fonctions:
-        + Vérifier fonctionnement des fonctions récursives
-        + Return statement
     - Tableaux
     - Commentaires
 
@@ -20,3 +17,5 @@ DONE :
         + Fonctions standard
         + Gérer le scope des variables dans la fonction
         + Add params in function
+        + Vérifier fonctionnement des fonctions récursives
+        + Return statement
