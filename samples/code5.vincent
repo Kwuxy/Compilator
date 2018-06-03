@@ -19,5 +19,5 @@ call test1()
 call test2(1, 3)
 call test2(5, "Hello")
 call test1()
-operation = call mul(3, 5)
+operation = call mul(3 + 1, 5)
 echo "Re dehors, operation : " + operation

@@ -1,3 +1,12 @@
-def funct(var1, var2) @
-    echo "toto"
+def factor(val) @
+    if val == 1 @
+        return 1
+    end
+
+    return val * call factor(val - 1)
 end
+
+echo "Debut programme"
+echo "factor(3) = " + call factor(3)
+echo "factor(5) = " + call factor(5)
+echo "Fin programme"

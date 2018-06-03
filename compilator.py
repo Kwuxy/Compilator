@@ -20,6 +20,8 @@ from operator import xor
 from time import strftime, time, gmtime
 
 statement_counter = 1
+string_to_log = ""
+stop_function = False
 
 tokens = (
     'AND', 'OR', 'TRUE', 'FALSE',
@@ -28,7 +30,8 @@ tokens = (
     'IS_BIGGER', 'IS_BIGGER_EQUALS', 'IS_SMALLER', 'IS_SMALLER_EQUALS', 'IS_EQUALS', 'IS_DIFFERENT',
     'LPAREN', 'RPAREN', 'SEMICOLON', 'DOT', 'COMA',
     'IF', 'ELSE', 'END', 'AT', 'FOR', 'WHILE', 'ECHO', 'DEF', 'CALL', 'RETURN',
-    'STRING'
+    'STRING',
+    'STOP'
 )
 
 # Tokens
@@ -82,6 +85,9 @@ t_NAME = r'((?!(AND|OR|True|False|if|else|end|for|while|echo|def|call|return))([
 
 # String
 t_STRING = r'(\'[^\']*\'|"[^\"]*")'
+
+# Error manager
+t_STOP = r'STOP_EVAL_BLOC'
 
 
 def t_NUMBER(t):
@@ -219,8 +225,8 @@ def p_return(p):
 
 
 def p_arg_list(p):
-    """arg_list : arithmetic_exp COMA arg_list
-                | arithmetic_exp
+    """arg_list : expression COMA arg_list
+                | expression
                 | empty"""
     if len(p) == 2:
         if p[1] is not None:
@@ -258,12 +264,12 @@ def p_boolean_exp_group(p):
 
 # -------------------- COMPARISON EXPRESSION --------------------
 def p_comparison_exp(p):
-    """comparison_exp : arithmetic_exp IS_BIGGER arithmetic_exp
-                      | arithmetic_exp IS_BIGGER_EQUALS arithmetic_exp
-                      | arithmetic_exp IS_SMALLER arithmetic_exp
-                      | arithmetic_exp IS_SMALLER_EQUALS arithmetic_exp
-                      | arithmetic_exp IS_EQUALS arithmetic_exp
-                      | arithmetic_exp IS_DIFFERENT arithmetic_exp"""
+    """comparison_exp : expression IS_BIGGER expression
+                      | expression IS_BIGGER_EQUALS expression
+                      | expression IS_SMALLER expression
+                      | expression IS_SMALLER_EQUALS expression
+                      | expression IS_EQUALS expression
+                      | expression IS_DIFFERENT expression"""
     if type(p[1]) == bool or type(p[3]) == bool:
         error("Comparison operation impossible between type " + type(p[1]) + " and type " + type(p[3]))
     else:
@@ -277,11 +283,11 @@ def p_comparison_exp_group(p):
 
 # -------------------- ARITHMETIC EXPRESSION --------------------
 def p_arithmetic_exp(p):
-    """arithmetic_exp : arithmetic_exp PLUS arithmetic_exp
-                      | arithmetic_exp MINUS arithmetic_exp
-                      | arithmetic_exp TIMES arithmetic_exp
-                      | arithmetic_exp DIVIDE arithmetic_exp
-                      | arithmetic_exp MODULO arithmetic_exp"""
+    """arithmetic_exp : expression PLUS expression
+                      | expression MINUS expression
+                      | expression TIMES expression
+                      | expression DIVIDE expression
+                      | expression MODULO expression"""
     if type(p[1]) == bool or type(p[3]) == bool:
         error("Arithmetic operation impossible between type " + type(p[1]) + " and type " + type(p[3]))
     else:
@@ -376,15 +382,15 @@ def p_error(p):
 
 
 def error(string):
-    print("Syntax error :", string)
+    print("Syntax error :", string, file=sys.stderr)
 
 
 # -------------------- CALCUL --------------------
-def eval_bloc(bloc):
-    global statement_counter
+def eval_bloc(bloc, default_value=0):
+    global statement_counter, string_to_log, stop_function
 
     if bloc == ():
-        return
+        return default_value
 
     if write_in_compilation:
         file_for_log = open('compilation.log', 'a')
@@ -396,17 +402,19 @@ def eval_bloc(bloc):
 
         return_val = eval_statement(bloc[0])
 
-        print('\tEvaluation :', str(bloc[0]), ':', str(return_val), "\n\n\n", file=file_for_log)
+        print('\tEvaluation :', str(bloc[0]), ':', str(string_to_log), "\n\n\n", file=file_for_log)
 
         file_for_log.close()
 
-        if bloc[0][0] == t_RETURN:
-            print(return_val, file=sys.stderr)
+        if return_val == t_STOP:
+            exit(1)
+
+        if stop_function:
             return return_val
     else:
         print(str(eval_statement(bloc[0])))
 
-    return eval_bloc(bloc[1])
+    return eval_bloc(bloc[1], default_value=return_val)
 
 
 def eval_statement(t):
@@ -436,140 +444,176 @@ def eval_statement(t):
     elif t[0] == t_RETURN:
         return eval_return_exp(t)
     else:
-        print(t)
-        return "Unknown command '" + t[0] + "'"
+        global string_to_log
+        string_to_log = "Unknown command '" + t[0] + "'"
+        error(string_to_log)
+        return t_STOP
 
 
 def eval_arithmetic_exp(t):
+    global string_to_log
+
     val1 = eval_statement(t[1])
     val2 = eval_statement(t[2])
     if re.match(t_PLUS, t[0]):
-        if type(val1) == str or type(val2) == str:
+        if type(val1) == str or type(val2) == str:  # Concatenate string
             p1 = val1 if type(val1) == str else str(val1)
             p2 = val2 if type(val2) == str else str(val2)
-            return p1 + p2
-        else:
-            return val1 + val2
-    if t[0] == t_MINUS:
-        return val1 - val2
-    if re.match(t_TIMES, t[0]):
+            string_to_log = p1 + p2
+        else:  # Add values
+            string_to_log = val1 + val2
+    elif t[0] == t_MINUS:
+        string_to_log = val1 - val2
+    elif re.match(t_TIMES, t[0]):
         if type(val1) == str and type(val2) == str:
-            return "Error operation '*' impossible between " + str(type(val1)) + \
-                   " and " + str(type(val2))
+            string_to_log = "Error operation '*' impossible between " + str(type(val1)) + \
+                            " and " + str(type(val2))
+            error(string_to_log)
+            return t_STOP
         else:
-            return val1 * val2
-    if t[0] == t_DIVIDE:
+            string_to_log = val1 * val2
+    elif t[0] == t_DIVIDE:
         # Si une des deux variable est une string
         if type(val1) == str or type(val2) == str:
-            return "Error : Cannot divide string"
+            string_to_log = "Error : Cannot divide string"
+            error(string_to_log)
+            return t_STOP
         return val1 / val2
-    if re.match(t_MODULO, t[0]):
-        return val1 % val2
+    elif re.match(t_MODULO, t[0]):
+        string_to_log = val1 % val2
     else:
-        return "An error has occurred, char '" + t[0] + "' unknown"
+        string_to_log = "An error has occurred, char '" + t[0] + "' unknown"
+        error(string_to_log)
+        return t_STOP
+
+    return string_to_log
 
 
 def eval_boolean_exp(t):
+    global string_to_log
     if t[0] == t_AND:  # 'AND':
-        return True if eval_statement(t[1]) and eval_statement(t[2]) else False
-    if t[0] == t_OR:  # 'OR':
-        return True if eval_statement(t[1]) or eval_statement(t[2]) else False
+        string_to_log = True if eval_statement(t[1]) and eval_statement(t[2]) else False
+    elif t[0] == t_OR:  # 'OR':
+        string_to_log = True if eval_statement(t[1]) or eval_statement(t[2]) else False
+    return string_to_log
 
 
 def eval_comparison_exp(t):
+    global string_to_log
     if t[0] == t_IS_BIGGER:  # '>':
-        return True if eval_statement(t[1]) > eval_statement(t[2]) else False
+        string_to_log = True if eval_statement(t[1]) > eval_statement(t[2]) else False
     elif t[0] == t_IS_BIGGER_EQUALS:  # '>=':
-        return True if eval_statement(t[1]) >= eval_statement(t[2]) else False
+        string_to_log = True if eval_statement(t[1]) >= eval_statement(t[2]) else False
     elif t[0] == t_IS_SMALLER:  # '<':
-        return True if eval_statement(t[1]) < eval_statement(t[2]) else False
+        string_to_log = True if eval_statement(t[1]) < eval_statement(t[2]) else False
     elif t[0] == t_IS_SMALLER_EQUALS:  # '<=':
-        return True if eval_statement(t[1]) <= eval_statement(t[2]) else False
+        string_to_log = True if eval_statement(t[1]) <= eval_statement(t[2]) else False
     elif t[0] == t_IS_EQUALS:  # '==':
-        return True if eval_statement(t[1]) == eval_statement(t[2]) else False
+        string_to_log = True if eval_statement(t[1]) == eval_statement(t[2]) else False
     elif t[0] == t_IS_DIFFERENT:  # '!=':
-        return True if eval_statement(t[1]) != eval_statement(t[2]) else False
+        string_to_log = True if eval_statement(t[1]) != eval_statement(t[2]) else False
+    return string_to_log
 
 
 def eval_assignment_exp(t):
+    global string_to_log
+
     val = eval_statement(t[2])
     # names[t[1]] = val
     function_stack[-1][t[1]] = val
-    return str(t[1]) + ' <--- ' + str(val)
+
+    string_to_log = str(t[1]) + ' <--- ' + str(val)
+    return string_to_log
 
 
 def eval_value(val):
+    global string_to_log
     if val == t_TRUE:
-        return True
+        string_to_log = True
     elif val == t_FALSE:
-        return False
+        string_to_log = False
     elif type(val) == str:
         if val[0] == '\"' or val[0] == '\'':  # Si c'est une string
-            return val[1:-1]
+            string_to_log = val[1:-1]
         else:
             try:  # Si c'est une variable
-                var = function_stack[-1][val]
+                string_to_log = function_stack[-1][val]
             except LookupError:
-                print("Unknown variable '%s' in current scope" % val)
-                var = 0
-            return var
+                string_to_log = "Unknown variable '%s' in current scope" % val
+                return t_STOP
     else:
-        return val
+        string_to_log = val
+    return string_to_log
 
 
 def eval_conditional_exp(t):
+    global string_to_log
     if eval_statement(t[1]):
-        eval_bloc(t[2])
-        return "If executed"
+        string_to_log = "If executed"
+        return eval_bloc(t[2])
     else:
         if len(t) > 3:
-            eval_bloc(t[3])
-            return "Else executed"
-    return "Condition in if was False"
+            string_to_log = "Else executed"
+            return eval_bloc(t[3])
+    string_to_log = "Condition in if was False"
+    return
 
 
 def eval_for_exp(t):
+    global string_to_log
     eval_statement(t[1])  # Assignment
     while eval_statement(t[2]):  # Boolean_exp
         eval_bloc(t[4])  # Treatments
         eval_bloc(t[3])  # Bloc in for
-    return "For executed"
+    string_to_log = "For executed"
+    return
 
 
 def eval_while_exp(t):
+    global string_to_log
     while eval_statement(t[1]):
         eval_bloc(t[2])
-    return "While executed"
+    string_to_log = "While executed"
 
 
 def eval_echo_exp(t):
+    global string_to_log
     res = str(eval_statement(t[1])) + " "
     print(res)
-    return "echo executed"
+    string_to_log = "echo executed"
+    return
 
 
 def eval_def_exp(t):
+    global string_to_log
     functions[t[1]] = (t[2], t[3])
-    return "function added to scope"
+    string_to_log = "function added to scope"
 
 
 def eval_call_exp(t):
-    function_stack.append({})
+    global string_to_log, stop_function
+    function_scope = {}
     counter = 0
     for arg in functions[t[1]][0]:
         try:
-            function_stack[-1][arg] = t[2][counter]
+            function_scope[arg] = eval_statement(t[2][counter])
             counter += 1
         except IndexError:
-            print("Missing argument", arg, "while calling function '%s'" % t[1], file=sys.stderr)
-            sys.exit(1)
-    return_val = eval_bloc(functions[t[1]][1])
+            string_to_log = "Missing argument " + arg + " while calling function '%s'" % t[1]
+            error(string_to_log)
+            return t_STOP
+    function_stack.append(function_scope)
+    string_to_log = eval_bloc(functions[t[1]][1])
     function_stack.pop()
-    return return_val
+    stop_function = False
+    return string_to_log
 
 
 def eval_return_exp(t):
-    return eval_statement(t[1])
+    global string_to_log, stop_function
+    string_to_log = eval_statement(t[1])
+    stop_function = True
+    return string_to_log
 
 
 # -------------------- DISPLAY --------------------
