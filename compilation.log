@@ -1,9 +1,10 @@
-Compilation begin on 2018-06-03 09:27:31 
+Compilation begin on 2018-06-03 14:36:57 
 
 program : (
 	('def', 'factor', ['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))
 	('echo', '"Debut programme"')
 	('echo', ('+', '"factor(3) = "', ('call', 'factor', [3])))
+	('~', 'Comment1')
 	('echo', ('+', '"factor(5) = "', ('call', 'factor', [5])))
 	('echo', '"Fin programme"')
 )
@@ -126,7 +127,19 @@ function_stack : [
 
 
 
-Statement number 11 :
+Statement number 10 :
+functions : {
+	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+}
+function_stack : [
+	{},
+]
+
+	Evaluation : ('~', 'Comment1') : Ignoring inline comment 
+
+
+
+Statement number 12 :
 functions : {
 	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
 }
@@ -139,7 +152,7 @@ function_stack : [
 
 
 
-Statement number 13 :
+Statement number 14 :
 functions : {
 	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
 }
@@ -153,7 +166,7 @@ function_stack : [
 
 
 
-Statement number 15 :
+Statement number 16 :
 functions : {
 	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
 }
@@ -168,7 +181,7 @@ function_stack : [
 
 
 
-Statement number 17 :
+Statement number 18 :
 functions : {
 	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
 }
@@ -184,7 +197,7 @@ function_stack : [
 
 
 
-Statement number 20 :
+Statement number 21 :
 functions : {
 	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
 }
@@ -201,7 +214,7 @@ function_stack : [
 
 
 
-Statement number 19 :
+Statement number 20 :
 functions : {
 	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
 }
@@ -218,7 +231,7 @@ function_stack : [
 
 
 
-Statement number 18 :
+Statement number 19 :
 functions : {
 	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
 }
@@ -234,7 +247,7 @@ function_stack : [
 
 
 
-Statement number 16 :
+Statement number 17 :
 functions : {
 	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
 }
@@ -249,7 +262,7 @@ function_stack : [
 
 
 
-Statement number 14 :
+Statement number 15 :
 functions : {
 	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
 }
@@ -263,7 +276,7 @@ function_stack : [
 
 
 
-Statement number 12 :
+Statement number 13 :
 functions : {
 	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
 }
@@ -276,7 +289,7 @@ function_stack : [
 
 
 
-Statement number 10 :
+Statement number 11 :
 functions : {
 	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
 }
@@ -288,7 +301,7 @@ function_stack : [
 
 
 
-Statement number 21 :
+Statement number 22 :
 functions : {
 	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
 }
@@ -300,4 +313,4 @@ function_stack : [
 
 
 
-Compilation executed in 0.0436 seconds
+Compilation executed in 0.0827 seconds

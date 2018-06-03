@@ -30,7 +30,7 @@ tokens = (
     'IS_BIGGER', 'IS_BIGGER_EQUALS', 'IS_SMALLER', 'IS_SMALLER_EQUALS', 'IS_EQUALS', 'IS_DIFFERENT',
     'LPAREN', 'RPAREN', 'SEMICOLON', 'DOT', 'COMA',
     'IF', 'ELSE', 'END', 'AT', 'FOR', 'WHILE', 'ECHO', 'DEF', 'CALL', 'RETURN',
-    'STRING',
+    'STRING', 'INLINE_COMMENT',
     'STOP'
 )
 
@@ -86,6 +86,9 @@ t_NAME = r'((?!(AND|OR|True|False|if|else|end|for|while|echo|def|call|return))([
 # String
 t_STRING = r'(\'[^\']*\'|"[^\"]*")'
 
+# Commentary management
+t_INLINE_COMMENT = '~'
+
 # Error manager
 t_STOP = r'STOP_EVAL_BLOC'
 
@@ -106,8 +109,9 @@ def t_newline(t):
 
 
 def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
-    t.lexer.skip(1)
+    print("Illegal character '%s'" % t.value[0], file=sys.stderr)
+    # t.lexer.skip(1)
+    exit(1)
 
 
 # Build the lexer
@@ -186,7 +190,8 @@ def p_instruction(p):
                    | assignment
                    | iterative_exp
                    | echo_exp
-                   | return"""
+                   | return
+                   | comment"""
     p[0] = p[1]
 
 
@@ -369,6 +374,18 @@ def p_while_exp_minimal(p):
     p[0] = ('while', p[2], p[3])
 
 
+# -------------------- COMMENTARIES --------------------
+
+def p_comment(p):
+    """comment : inline_comment"""
+    p[0] = p[1]
+
+
+def p_inline_comment(p):
+    """inline_comment : INLINE_COMMENT NAME"""
+    p[0] = (t_INLINE_COMMENT, p[2])
+
+
 # -------------------- EMPTY VALUE --------------------
 
 def p_empty(p):
@@ -443,6 +460,8 @@ def eval_statement(t):
         return eval_call_exp(t)
     elif t[0] == t_RETURN:
         return eval_return_exp(t)
+    elif t[0] == t_INLINE_COMMENT:
+        return eval_inline_comment(t)
     else:
         global string_to_log
         string_to_log = "Unknown command '" + t[0] + "'"
@@ -614,6 +633,12 @@ def eval_return_exp(t):
     string_to_log = eval_statement(t[1])
     stop_function = True
     return string_to_log
+
+
+def eval_inline_comment(t):
+    global string_to_log
+    string_to_log = 'Ignoring inline comment'
+    return None
 
 
 # -------------------- DISPLAY --------------------
