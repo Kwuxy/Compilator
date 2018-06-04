@@ -1,0 +1,5 @@
+import "samples/code7.vincent"
+
+call printer("Begin program")
+echo "factor(5) : " + call factor(5)
+call printer("End program")

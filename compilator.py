@@ -16,12 +16,12 @@ import uuid
 import graphviz as gv
 import re
 import sys
-from operator import xor
 from time import strftime, time, gmtime
 
 statement_counter = 1
 string_to_log = ""
 stop_function = False
+import_file = False
 
 tokens = (
     'AND', 'OR', 'TRUE', 'FALSE',
@@ -31,7 +31,7 @@ tokens = (
     'LPAREN', 'RPAREN', 'SEMICOLON', 'DOT', 'COMA',
     'IF', 'ELSE', 'END', 'AT', 'FOR', 'WHILE', 'ECHO', 'DEF', 'CALL', 'RETURN',
     'STRING', 'INLINE_COMMENT', 'BEGIN_MULTI_LINES_COMMENT', 'END_MULTI_LINES_COMMENT',
-    'STOP'
+    'STOP', 'IMPORT'
 )
 
 # Tokens
@@ -81,7 +81,7 @@ t_TRUE = r'True'
 t_FALSE = r'False'
 
 # Variables
-t_NAME = r'((?!(AND|OR|True|False|if|else|end|for|while|echo|def|call|return|global))([a-zA-Z_][a-zA-Z0-9_]*))'
+t_NAME = r'((?!(AND|OR|True|False|if|else|end|for|while|echo|def|call|return|global|import))([a-zA-Z_][a-zA-Z0-9_]*))'
 t_GLOBAL = r'global'
 
 # String
@@ -94,6 +94,9 @@ t_END_MULTI_LINES_COMMENT = '~/'
 
 # Error manager
 t_STOP = r'STOP_EVAL_BLOC'
+
+# Import
+t_IMPORT = r'import'
 
 
 def t_NUMBER(t):
@@ -143,6 +146,10 @@ dict_boolean_operand = {'AND', 'OR'}
 def p_program(p):
     """program : bloc"""
     p[0] = p[1]
+
+    if import_file:  # Si on importe les fonctions d'un fichier
+        eval_bloc_get_only_function_def(p[0])
+        return
 
     print(p[0])
 
@@ -197,7 +204,8 @@ def p_instruction(p):
                    | echo_exp
                    | return
                    | comment
-                   | global"""
+                   | global
+                   | import"""
     p[0] = p[1]
 
 
@@ -357,6 +365,18 @@ def p_global(p):
         p[0] = (t_GLOBAL, p[2], p[4])
 
 
+# -------------------- FILE MANAGEMENT --------------------
+
+def p_import(p):
+    """import : IMPORT STRING"""
+    p[0] = (t_IMPORT, p[2])
+
+# def p_filename(p):
+#     """filename : NAME DOT NAME"""
+#     p[0] = p[1] + '.' + p[2]
+#     print("Test `p_filename` :", p[0])
+
+
 # -------------------- CONDITIONAL EXPRESSION --------------------
 
 def p_conditional_exp(p):
@@ -440,6 +460,17 @@ def error(string):
 
 
 # -------------------- CALCUL --------------------
+
+def eval_bloc_get_only_function_def(bloc):
+    if bloc == ():
+        return
+
+    if bloc[0][0] == t_DEF:
+        eval_def_exp(bloc[0])
+
+    eval_bloc_get_only_function_def(bloc[1])
+
+
 def eval_bloc(bloc, default_value=0):
     global statement_counter, string_to_log, stop_function
 
@@ -503,6 +534,8 @@ def eval_statement(t):
         return eval_multi_line_comment(t)
     elif t[0] == t_GLOBAL:
         return eval_global(t)
+    elif t[0] == t_IMPORT:
+        return eval_import(t)
     else:
         global string_to_log
         string_to_log = "Unknown command '" + t[0] + "'"
@@ -703,6 +736,17 @@ def eval_global(t):
     else:
         val = eval_statement(t[2])
     function_stack[0][t[1]] = val
+
+
+def eval_import(t):
+    global string_to_log, import_file
+    script = open(t[1][1:-1], 'r').read()
+
+    import_file = True
+    yacc.parse(script)
+    import_file = False
+
+    string_to_log = "File '%s'\'s functions imported" % t[1][1:-1]
 
 
 # -------------------- DISPLAY --------------------

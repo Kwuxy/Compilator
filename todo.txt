@@ -3,9 +3,11 @@ A voir en dernier recours :
     - Pointeurs
 
 TODO :
-    - Precedence
     - Tableaux
-    - Commentaires
+    - Precedence
+    - Gestion des erreurs
+    - Gestion saisie clavier
+    - Manipulation fichier
 
 
 DONE :
@@ -19,3 +21,6 @@ DONE :
         + Add params in function
         + Vérifier fonctionnement des fonctions récursives
         + Return statement
+    - Commentaires
+    - Variables globales
+    - Import

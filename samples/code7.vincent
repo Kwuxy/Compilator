@@ -1,0 +1,14 @@
+def printer(var) @
+    echo var ~ Random inline comment
+end
+
+/~ Some random multi line comment ~/
+def factor(val) @
+    if val == 1 @
+        return 1
+    end
+
+    return val * call factor(val - 1)
+end
+
+echo "Cette chaine ne devrait pas etre affichee"
