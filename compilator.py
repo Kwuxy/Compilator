@@ -25,7 +25,7 @@ stop_function = False
 
 tokens = (
     'AND', 'OR', 'TRUE', 'FALSE',
-    'NAME', 'NUMBER',
+    'NAME', 'NUMBER', 'GLOBAL',
     'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'MODULO', 'EQUALS',
     'IS_BIGGER', 'IS_BIGGER_EQUALS', 'IS_SMALLER', 'IS_SMALLER_EQUALS', 'IS_EQUALS', 'IS_DIFFERENT',
     'LPAREN', 'RPAREN', 'SEMICOLON', 'DOT', 'COMA',
@@ -81,7 +81,8 @@ t_TRUE = r'True'
 t_FALSE = r'False'
 
 # Variables
-t_NAME = r'((?!(AND|OR|True|False|if|else|end|for|while|echo|def|call|return))([a-zA-Z_][a-zA-Z0-9_]*))'
+t_NAME = r'((?!(AND|OR|True|False|if|else|end|for|while|echo|def|call|return|global))([a-zA-Z_][a-zA-Z0-9_]*))'
+t_GLOBAL = r'global'
 
 # String
 t_STRING = r'(\'[^\']*\'|"[^\"]*")'
@@ -130,6 +131,7 @@ precedence = (
 
 # dictionary
 names = {}
+global_var = {}  # Jsuis pas sûr LOL
 functions = {}
 function_stack = []
 dict_comparison_operand = {'<', '<=', '>', '>=', '==', '!='}
@@ -139,7 +141,7 @@ dict_boolean_operand = {'AND', 'OR'}
 
 # -------------------- PROGRAM --------------------
 def p_program(p):
-    """program : bloc """
+    """program : bloc"""
     p[0] = p[1]
 
     print(p[0])
@@ -148,7 +150,8 @@ def p_program(p):
     # print("names :", names)
     print_bloc_as_tree_in_graph(p[0])
 
-    # Init main function
+    # Init main function & globals variable
+    function_stack.append({})
     function_stack.append({})
 
     global write_in_compilation
@@ -193,7 +196,8 @@ def p_instruction(p):
                    | iterative_exp
                    | echo_exp
                    | return
-                   | comment"""
+                   | comment
+                   | global"""
     p[0] = p[1]
 
 
@@ -340,8 +344,17 @@ def p_variable(p):
 
 
 def p_assignment(p):
-    """assignment : NAME EQUALS expression"""
+    """assignment : variable EQUALS expression"""
     p[0] = (p[2], p[1], p[3])
+
+
+def p_global(p):
+    """global : GLOBAL variable
+              | GLOBAL variable EQUALS expression"""
+    if len(p) == 3:
+        p[0] = (t_GLOBAL, p[2])
+    else:
+        p[0] = (t_GLOBAL, p[2], p[4])
 
 
 # -------------------- CONDITIONAL EXPRESSION --------------------
@@ -389,6 +402,11 @@ def p_inline_comment(p):
     p[0] = (t_INLINE_COMMENT, p[2])
 
 
+def p_multi_line_comment(p):
+    """multi_line_comment : BEGIN_MULTI_LINES_COMMENT text END_MULTI_LINES_COMMENT"""
+    p[0] = (t_BEGIN_MULTI_LINES_COMMENT, p[2])
+
+
 def p_text(p):
     """text : word text
             | word"""
@@ -404,15 +422,11 @@ def p_word(p):
     p[0] = str(p[1])
 
 
-def p_multi_line_comment(p):
-    """multi_line_comment : BEGIN_MULTI_LINES_COMMENT text END_MULTI_LINES_COMMENT"""
-    p[0] = (t_BEGIN_MULTI_LINES_COMMENT, p[2])
-
-
 # -------------------- EMPTY VALUE --------------------
 
 def p_empty(p):
     """empty : """
+    p[0] = None
 
 
 # -------------------- ERROR --------------------
@@ -487,6 +501,8 @@ def eval_statement(t):
         return eval_inline_comment(t)
     elif t[0] == t_BEGIN_MULTI_LINES_COMMENT:
         return eval_multi_line_comment(t)
+    elif t[0] == t_GLOBAL:
+        return eval_global(t)
     else:
         global string_to_log
         string_to_log = "Unknown command '" + t[0] + "'"
@@ -563,8 +579,14 @@ def eval_assignment_exp(t):
     global string_to_log
 
     val = eval_statement(t[2])
-    # names[t[1]] = val
-    function_stack[-1][t[1]] = val
+    try:
+        function_stack[-1][t[1]] = val
+    except LookupError:
+        try:
+            function_stack[0][t[1]] = val
+        except LookupError:
+            string_to_log = "Unknown variable '%s' in current scope and globals" % val
+            return t_STOP
 
     string_to_log = str(t[1]) + ' <--- ' + str(val)
     return string_to_log
@@ -580,11 +602,14 @@ def eval_value(val):
         if val[0] == '\"' or val[0] == '\'':  # Si c'est une string
             string_to_log = val[1:-1]
         else:
-            try:  # Si c'est une variable
+            try:  # Si c'est une variable locale
                 string_to_log = function_stack[-1][val]
             except LookupError:
-                string_to_log = "Unknown variable '%s' in current scope" % val
-                return t_STOP
+                    try:  # Si c'est une variable globale
+                        string_to_log = function_stack[0][val]
+                    except LookupError:
+                        string_to_log = "Unknown variable '%s' in current scope and globals" % val
+                        return t_STOP
     else:
         string_to_log = val
     return string_to_log
@@ -670,6 +695,14 @@ def eval_multi_line_comment(t):
     global string_to_log
     string_to_log = 'Ignoring multi line comment'
     return None
+
+
+def eval_global(t):
+    if len(t) == 2:
+        val = 0
+    else:
+        val = eval_statement(t[2])
+    function_stack[0][t[1]] = val
 
 
 # -------------------- DISPLAY --------------------

@@ -1,4 +1,6 @@
 def factor(val) @
+    echo gbl_var3 + " " + val
+
     if val == 1 @
         return 1
     end
@@ -6,10 +8,15 @@ def factor(val) @
     return val * call factor(val - 1)
 end
 
+global gbl_var1
+global gbl_var2 = 5
+global gbl_var3 = 'TEST'
+
 echo "Debut programme"
 /~ Multi line comment on 1 line ~/
-echo "factor(3) = " + call factor(3) ~ Comment1 comment2 inline_comment
-echo "factor(5) = " + call factor(5) ~ Comment on a second line
+gbl_var1 = 3
+echo "factor(" + gbl_var1 + ") = " + call factor(gbl_var1) ~ Comment1 comment2 inline_comment
+echo "factor(" + gbl_var2 + ") = " + call factor(gbl_var2) ~ Comment on a second line
 /~
     Multi line comment on several lines
     into the code
