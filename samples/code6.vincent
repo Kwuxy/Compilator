@@ -7,6 +7,11 @@ def factor(val) @
 end
 
 echo "Debut programme"
-echo "factor(3) = " + call factor(3)
-echo "factor(5) = " + call factor(5)
+/~ Multi line comment on 1 line ~/
+echo "factor(3) = " + call factor(3) ~ Comment1 comment2 inline_comment
+echo "factor(5) = " + call factor(5) ~ Comment on a second line
+/~
+    Multi line comment on several lines
+    into the code
+~/
 echo "Fin programme"
