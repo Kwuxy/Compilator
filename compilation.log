@@ -1,10 +1,19 @@
-Compilation begin on 2018-06-04 21:26:00 
+Compilation begin on 2018-06-06 19:39:23 
 
 program : (
-	('import', '"samples/code7.vincent"')
-	('call', 'printer', ['"Begin program"'])
-	('echo', ('+', '"factor(5) : "', ('call', 'factor', [5])))
-	('call', 'printer', ['"End program"'])
+	('def', 'factor', ['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))))
+	('global', 'gbl_var1')
+	('global', 'gbl_var2', 5)
+	('global', 'gbl_var3', "'TEST'")
+	('echo', '"Debut programme"')
+	('/~', 'Multi line comment on 1 line')
+	('=', 'gbl_var1', 3)
+	('echo', ('+', ('+', ('+', '"factor("', 'gbl_var1'), '") = "'), ('call', 'factor', ['gbl_var1'])))
+	('~', 'Comment1 comment2 inline_comment')
+	('echo', ('+', ('+', ('+', '"factor("', 'gbl_var2'), '") = "'), ('call', 'factor', ['gbl_var2'])))
+	('~', 'Comment on a second line')
+	('/~', 'Multi line comment on several lines into the code')
+	('echo', '"Fin programme"')
 )
 Statement number 1 :
 functions : {
@@ -14,95 +23,109 @@ function_stack : [
 	{},
 ]
 
-	Evaluation : ('import', '"samples/code7.vincent"') : File 'samples/code7.vincent''s functions imported 
-
-
-
-Statement number 3 :
-functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
-}
-function_stack : [
-	{},
-	{},
-	{'var': 'Begin program'},
-]
-
-	Evaluation : ('echo', 'var') : echo executed 
-
-
-
-Statement number 4 :
-functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
-}
-function_stack : [
-	{},
-	{},
-	{'var': 'Begin program'},
-]
-
-	Evaluation : ('~', 'Random inline comment') : Ignoring inline comment 
+	Evaluation : ('def', 'factor', ['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))) : function added to scope 
 
 
 
 Statement number 2 :
 functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
 }
 function_stack : [
 	{},
 	{},
 ]
 
-	Evaluation : ('call', 'printer', ['"Begin program"']) : None 
+	Evaluation : ('global', 'gbl_var1') : function added to scope 
+
+
+
+Statement number 3 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0},
+	{},
+]
+
+	Evaluation : ('global', 'gbl_var2', 5) : 5 
+
+
+
+Statement number 4 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5},
+	{},
+]
+
+	Evaluation : ('global', 'gbl_var3', "'TEST'") : TEST 
+
+
+
+Statement number 5 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{},
+]
+
+	Evaluation : ('echo', '"Debut programme"') : echo executed 
 
 
 
 Statement number 6 :
 functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
 }
 function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
 	{},
-	{},
-	{'val': 5},
 ]
 
-	Evaluation : ('if', ('==', 'val', 1), (('return', 1), ())) : Condition in if was False 
+	Evaluation : ('/~', 'Multi line comment on 1 line') : Ignoring multi line comment 
 
 
 
-Statement number 8 :
+Statement number 7 :
 functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
 }
 function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
 	{},
-	{},
-	{'val': 5},
-	{'val': 4},
 ]
 
-	Evaluation : ('if', ('==', 'val', 1), (('return', 1), ())) : Condition in if was False 
+	Evaluation : ('=', 'gbl_var1', 3) : gbl_var1 <--- 3 
+
+
+
+Statement number 9 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+	{'val': 3},
+]
+
+	Evaluation : ('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')) : echo executed 
 
 
 
 Statement number 10 :
 functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
 }
 function_stack : [
-	{},
-	{},
-	{'val': 5},
-	{'val': 4},
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
 	{'val': 3},
 ]
 
@@ -112,14 +135,26 @@ function_stack : [
 
 Statement number 12 :
 functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
 }
 function_stack : [
-	{},
-	{},
-	{'val': 5},
-	{'val': 4},
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+	{'val': 3},
+	{'val': 2},
+]
+
+	Evaluation : ('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')) : echo executed 
+
+
+
+Statement number 13 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
 	{'val': 3},
 	{'val': 2},
 ]
@@ -130,12 +165,256 @@ function_stack : [
 
 Statement number 15 :
 functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
 }
 function_stack : [
-	{},
-	{},
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+	{'val': 3},
+	{'val': 2},
+	{'val': 1},
+]
+
+	Evaluation : ('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')) : echo executed 
+
+
+
+Statement number 17 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+	{'val': 3},
+	{'val': 2},
+	{'val': 1},
+]
+
+	Evaluation : ('return', 1) : 1 
+
+
+
+Statement number 16 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+	{'val': 3},
+	{'val': 2},
+	{'val': 1},
+]
+
+	Evaluation : ('if', ('==', 'val', 1), (('return', 1), ())) : 1 
+
+
+
+Statement number 14 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+	{'val': 3},
+	{'val': 2},
+]
+
+	Evaluation : ('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))) : 2 
+
+
+
+Statement number 11 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+	{'val': 3},
+]
+
+	Evaluation : ('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))) : 6 
+
+
+
+Statement number 8 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+]
+
+	Evaluation : ('echo', ('+', ('+', ('+', '"factor("', 'gbl_var1'), '") = "'), ('call', 'factor', ['gbl_var1']))) : echo executed 
+
+
+
+Statement number 18 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+]
+
+	Evaluation : ('~', 'Comment1 comment2 inline_comment') : Ignoring inline comment 
+
+
+
+Statement number 20 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+	{'val': 5},
+]
+
+	Evaluation : ('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')) : echo executed 
+
+
+
+Statement number 21 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+	{'val': 5},
+]
+
+	Evaluation : ('if', ('==', 'val', 1), (('return', 1), ())) : Condition in if was False 
+
+
+
+Statement number 23 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+	{'val': 5},
+	{'val': 4},
+]
+
+	Evaluation : ('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')) : echo executed 
+
+
+
+Statement number 24 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+	{'val': 5},
+	{'val': 4},
+]
+
+	Evaluation : ('if', ('==', 'val', 1), (('return', 1), ())) : Condition in if was False 
+
+
+
+Statement number 26 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+	{'val': 5},
+	{'val': 4},
+	{'val': 3},
+]
+
+	Evaluation : ('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')) : echo executed 
+
+
+
+Statement number 27 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+	{'val': 5},
+	{'val': 4},
+	{'val': 3},
+]
+
+	Evaluation : ('if', ('==', 'val', 1), (('return', 1), ())) : Condition in if was False 
+
+
+
+Statement number 29 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+	{'val': 5},
+	{'val': 4},
+	{'val': 3},
+	{'val': 2},
+]
+
+	Evaluation : ('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')) : echo executed 
+
+
+
+Statement number 30 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+	{'val': 5},
+	{'val': 4},
+	{'val': 3},
+	{'val': 2},
+]
+
+	Evaluation : ('if', ('==', 'val', 1), (('return', 1), ())) : Condition in if was False 
+
+
+
+Statement number 32 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
+	{'val': 5},
+	{'val': 4},
+	{'val': 3},
+	{'val': 2},
+	{'val': 1},
+]
+
+	Evaluation : ('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')) : echo executed 
+
+
+
+Statement number 34 :
+functions : {
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
+}
+function_stack : [
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
 	{'val': 5},
 	{'val': 4},
 	{'val': 3},
@@ -147,14 +426,13 @@ function_stack : [
 
 
 
-Statement number 14 :
+Statement number 33 :
 functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
 }
 function_stack : [
-	{},
-	{},
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
 	{'val': 5},
 	{'val': 4},
 	{'val': 3},
@@ -166,14 +444,13 @@ function_stack : [
 
 
 
-Statement number 13 :
+Statement number 31 :
 functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
 }
 function_stack : [
-	{},
-	{},
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
 	{'val': 5},
 	{'val': 4},
 	{'val': 3},
@@ -184,14 +461,13 @@ function_stack : [
 
 
 
-Statement number 11 :
+Statement number 28 :
 functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
 }
 function_stack : [
-	{},
-	{},
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
 	{'val': 5},
 	{'val': 4},
 	{'val': 3},
@@ -201,14 +477,13 @@ function_stack : [
 
 
 
-Statement number 9 :
+Statement number 25 :
 functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
 }
 function_stack : [
-	{},
-	{},
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
 	{'val': 5},
 	{'val': 4},
 ]
@@ -217,14 +492,13 @@ function_stack : [
 
 
 
-Statement number 7 :
+Statement number 22 :
 functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
 }
 function_stack : [
-	{},
-	{},
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
 	{'val': 5},
 ]
 
@@ -232,62 +506,56 @@ function_stack : [
 
 
 
-Statement number 5 :
+Statement number 19 :
 functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
 }
 function_stack : [
-	{},
-	{},
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
 ]
 
-	Evaluation : ('echo', ('+', '"factor(5) : "', ('call', 'factor', [5]))) : echo executed 
+	Evaluation : ('echo', ('+', ('+', ('+', '"factor("', 'gbl_var2'), '") = "'), ('call', 'factor', ['gbl_var2']))) : echo executed 
 
 
 
-Statement number 17 :
+Statement number 35 :
 functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
 }
 function_stack : [
-	{},
-	{},
-	{'var': 'End program'},
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
 ]
 
-	Evaluation : ('echo', 'var') : echo executed 
+	Evaluation : ('~', 'Comment on a second line') : Ignoring inline comment 
 
 
 
-Statement number 18 :
+Statement number 36 :
 functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
 }
 function_stack : [
-	{},
-	{},
-	{'var': 'End program'},
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
 ]
 
-	Evaluation : ('~', 'Random inline comment') : Ignoring inline comment 
+	Evaluation : ('/~', 'Multi line comment on several lines into the code') : Ignoring multi line comment 
 
 
 
-Statement number 16 :
+Statement number 37 :
 functions : {
-	printer : (['var'], (('echo', 'var'), (('~', 'Random inline comment'), ()))),
-	factor : (['val'], (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ()))),
+	factor : (['val'], (('echo', ('+', ('+', 'gbl_var3', '" "'), 'val')), (('if', ('==', 'val', 1), (('return', 1), ())), (('return', ('*', 'val', ('call', 'factor', [('-', 'val', 1)]))), ())))),
 }
 function_stack : [
-	{},
-	{},
+	{'gbl_var1': 0, 'gbl_var2': 5, 'gbl_var3': 'TEST'},
+	{'gbl_var1': 3},
 ]
 
-	Evaluation : ('call', 'printer', ['"End program"']) : None 
+	Evaluation : ('echo', '"Fin programme"') : echo executed 
 
 
 
-Compilation executed in 0.0757 seconds
+Compilation executed in 0.0511 seconds

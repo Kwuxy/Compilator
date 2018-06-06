@@ -4,7 +4,7 @@ A voir en dernier recours :
 
 TODO :
     - Tableaux
-    - Precedence
+    - Precedence (???)
     - Gestion des erreurs
     - Gestion saisie clavier
     - Manipulation fichier

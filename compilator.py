@@ -23,17 +23,6 @@ string_to_log = ""
 stop_function = False
 import_file = False
 
-tokens = (
-    'AND', 'OR', 'TRUE', 'FALSE',
-    'NAME', 'NUMBER', 'GLOBAL',
-    'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'MODULO', 'EQUALS',
-    'IS_BIGGER', 'IS_BIGGER_EQUALS', 'IS_SMALLER', 'IS_SMALLER_EQUALS', 'IS_EQUALS', 'IS_DIFFERENT',
-    'LPAREN', 'RPAREN', 'SEMICOLON', 'DOT', 'COMA',
-    'IF', 'ELSE', 'END', 'AT', 'FOR', 'WHILE', 'ECHO', 'DEF', 'CALL', 'RETURN',
-    'STRING', 'INLINE_COMMENT', 'BEGIN_MULTI_LINES_COMMENT', 'END_MULTI_LINES_COMMENT',
-    'STOP', 'IMPORT'
-)
-
 # Tokens
 # Arithmetic operators
 t_PLUS = r'\+'
@@ -65,24 +54,9 @@ t_AT = r'@'
 t_DOT = r'\.'
 t_COMA = r','
 
-# Function delimiters
-t_IF = r'if'
-t_ELSE = r'else'
-t_END = r'end'
-t_FOR = r'for'
-t_WHILE = r'while'
-t_ECHO = r'echo'
-t_DEF = r'def'
-t_CALL = r'call'
-t_RETURN = r'return'
-
 # Boolean values
 t_TRUE = r'True'
 t_FALSE = r'False'
-
-# Variables
-t_NAME = r'((?!(AND|OR|True|False|if|else|end|for|while|echo|def|call|return|global|import))([a-zA-Z_][a-zA-Z0-9_]*))'
-t_GLOBAL = r'global'
 
 # String
 t_STRING = r'(\'[^\']*\'|"[^\"]*")'
@@ -94,9 +68,62 @@ t_END_MULTI_LINES_COMMENT = '~/'
 
 # Error manager
 t_STOP = r'STOP_EVAL_BLOC'
-
-# Import
+t_IF = r'if'
+t_ELSE = r'else'
+t_END = r'end'
+t_FOR = r'for'
+t_WHILE = r'while'
+t_ECHO = r'echo'
+t_DEF = r'def'
+t_CALL = r'call'
+t_RETURN = r'return'
+t_GLOBAL = r'global'
 t_IMPORT = r'import'
+
+reserved = {
+    # If statement
+    t_IF: 'IF',
+    t_ELSE: 'ELSE',
+    t_END: 'END',
+
+    # Functions delimiter
+    t_FOR: 'FOR',
+    t_WHILE: 'WHILE',
+    t_ECHO: 'ECHO',
+
+    # Function definition, call & use
+    t_DEF: 'DEF',
+    t_CALL: 'CALL',
+    t_RETURN: 'RETURN',
+
+    # Global variable definition
+    t_GLOBAL: 'GLOBAL',
+
+    # Import statement
+    t_IMPORT: 'IMPORT',
+
+    # Boolean operators
+    t_AND: 'AND',
+    t_OR: 'OR',
+
+    # Boolean values
+    t_TRUE: 'TRUE',
+    t_FALSE: 'FALSE'
+}
+
+tokens = tuple(reserved.values()) + (
+    'NAME', 'NUMBER',
+    'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'MODULO', 'EQUALS',
+    'IS_BIGGER', 'IS_BIGGER_EQUALS', 'IS_SMALLER', 'IS_SMALLER_EQUALS', 'IS_EQUALS', 'IS_DIFFERENT',
+    'LPAREN', 'RPAREN', 'SEMICOLON', 'DOT', 'COMA', 'AT',
+    'STRING', 'INLINE_COMMENT', 'BEGIN_MULTI_LINES_COMMENT', 'END_MULTI_LINES_COMMENT',
+    'STOP', 'ID'
+)
+
+def t_ID(t):
+    r"""[A-Za-z_][\w_]*"""
+    t.type = reserved.get(t.value, "NAME")
+    return t
 
 
 def t_NUMBER(t):
@@ -134,12 +161,12 @@ precedence = (
 
 # dictionary
 names = {}
-global_var = {}  # Jsuis pas sûr LOL
 functions = {}
 function_stack = []
-dict_comparison_operand = {'<', '<=', '>', '>=', '==', '!='}
+dict_comparison_operand = {t_IS_SMALLER, t_IS_SMALLER_EQUALS, t_IS_BIGGER, t_IS_BIGGER_EQUALS, t_IS_EQUALS, t_IS_DIFFERENT}
 dict_arithmetic_operand = {'+', '-', '*', '/', '%'}
-dict_boolean_operand = {'AND', 'OR'}
+
+dict_boolean_operand = {t_AND, t_OR}
 
 
 # -------------------- PROGRAM --------------------
@@ -213,7 +240,7 @@ def p_instruction(p):
 
 def p_echo_exp(p):
     """echo_exp : ECHO statement"""
-    p[0] = ('echo', p[2])
+    p[0] = (t_ECHO, p[2])
 
 
 # -------------------- EXPRESSION --------------------
@@ -230,17 +257,17 @@ def p_expression(p):
 
 def p_function_def(p):
     """function_def : DEF NAME LPAREN arg_list RPAREN AT bloc END"""
-    p[0] = ('def', p[2], p[4], p[7])
+    p[0] = (t_DEF, p[2], p[4], p[7])
 
 
 def p_function_call(p):
     """function_call : CALL NAME LPAREN arg_list RPAREN"""
-    p[0] = ('call', p[2], p[4])
+    p[0] = (t_CALL, p[2], p[4])
 
 
 def p_return(p):
     """return : RETURN expression"""
-    p[0] = ('return', p[2])
+    p[0] = (t_RETURN, p[2])
 
 
 def p_arg_list(p):
@@ -371,11 +398,6 @@ def p_import(p):
     """import : IMPORT STRING"""
     p[0] = (t_IMPORT, p[2])
 
-# def p_filename(p):
-#     """filename : NAME DOT NAME"""
-#     p[0] = p[1] + '.' + p[2]
-#     print("Test `p_filename` :", p[0])
-
 
 # -------------------- CONDITIONAL EXPRESSION --------------------
 
@@ -383,30 +405,30 @@ def p_conditional_exp(p):
     """conditional_exp : IF boolean_exp AT bloc END
                        | IF boolean_exp AT bloc ELSE bloc END"""
     if len(p) == 6:
-        p[0] = ('if', p[2], p[4])
+        p[0] = (t_IF, p[2], p[4])
     else:
-        p[0] = ('if', p[2], p[4], p[6])
+        p[0] = (t_IF, p[2], p[4], p[6])
 
 
 # -------------------- ITERATIVE EXPRESSION --------------------
 def p_for_exp(p):
     """iterative_exp : FOR assignment AT boolean_exp AT bloc AT bloc END"""
-    p[0] = ('for', p[2], p[4], p[6], p[8])
+    p[0] = (t_FOR, p[2], p[4], p[6], p[8])
 
 
 def p_for_exp_minimal(p):
     """iterative_exp : FOR assignment boolean_exp bloc AT bloc END"""
-    p[0] = ('for', p[2], p[3], p[4], p[6])
+    p[0] = (t_FOR, p[2], p[3], p[4], p[6])
 
 
 def p_while_exp(p):
     """iterative_exp : WHILE boolean_exp AT bloc END"""
-    p[0] = ('while', p[2], p[4])
+    p[0] = (t_WHILE, p[2], p[4])
 
 
 def p_while_exp_minimal(p):
     """iterative_exp : WHILE boolean_exp bloc END"""
-    p[0] = ('while', p[2], p[3])
+    p[0] = (t_WHILE, p[2], p[3])
 
 
 # -------------------- COMMENTARIES --------------------
@@ -638,11 +660,11 @@ def eval_value(val):
             try:  # Si c'est une variable locale
                 string_to_log = function_stack[-1][val]
             except LookupError:
-                    try:  # Si c'est une variable globale
-                        string_to_log = function_stack[0][val]
-                    except LookupError:
-                        string_to_log = "Unknown variable '%s' in current scope and globals" % val
-                        return t_STOP
+                try:  # Si c'est une variable globale
+                    string_to_log = function_stack[0][val]
+                except LookupError:
+                    string_to_log = "Unknown variable '%s' in current scope and globals" % val
+                    return t_STOP
     else:
         string_to_log = val
     return string_to_log
