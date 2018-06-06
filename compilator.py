@@ -79,6 +79,7 @@ t_CALL = r'call'
 t_RETURN = r'return'
 t_GLOBAL = r'global'
 t_IMPORT = r'import'
+t_INPUT = r'input'
 
 reserved = {
     # If statement
@@ -108,7 +109,10 @@ reserved = {
 
     # Boolean values
     t_TRUE: 'TRUE',
-    t_FALSE: 'FALSE'
+    t_FALSE: 'FALSE',
+
+    # Input
+    t_INPUT: 'INPUT'
 }
 
 tokens = tuple(reserved.values()) + (
@@ -117,8 +121,9 @@ tokens = tuple(reserved.values()) + (
     'IS_BIGGER', 'IS_BIGGER_EQUALS', 'IS_SMALLER', 'IS_SMALLER_EQUALS', 'IS_EQUALS', 'IS_DIFFERENT',
     'LPAREN', 'RPAREN', 'SEMICOLON', 'DOT', 'COMA', 'AT',
     'STRING', 'INLINE_COMMENT', 'BEGIN_MULTI_LINES_COMMENT', 'END_MULTI_LINES_COMMENT',
-    'STOP', 'ID'
+    'STOP'
 )
+
 
 def t_ID(t):
     r"""[A-Za-z_][\w_]*"""
@@ -163,7 +168,10 @@ precedence = (
 names = {}
 functions = {}
 function_stack = []
-dict_comparison_operand = {t_IS_SMALLER, t_IS_SMALLER_EQUALS, t_IS_BIGGER, t_IS_BIGGER_EQUALS, t_IS_EQUALS, t_IS_DIFFERENT}
+dict_comparison_operand = {
+    t_IS_SMALLER, t_IS_SMALLER_EQUALS, t_IS_BIGGER,
+    t_IS_BIGGER_EQUALS, t_IS_EQUALS, t_IS_DIFFERENT
+}
 dict_arithmetic_operand = {'+', '-', '*', '/', '%'}
 
 dict_boolean_operand = {t_AND, t_OR}
@@ -249,8 +257,16 @@ def p_expression(p):
                   | arithmetic_exp
                   | conditional_exp
                   | function_def
-                  | function_call"""
+                  | function_call
+                  | input"""
     p[0] = p[1]
+
+
+# -------------------- FILE MANAGEMENT --------------------
+
+def p_input(p):
+    """input : INPUT LPAREN RPAREN"""
+    p[0] = tuple([t_INPUT])
 
 
 # -------------------- FUNCTION DEFINITION --------------------
@@ -558,6 +574,8 @@ def eval_statement(t):
         return eval_global(t)
     elif t[0] == t_IMPORT:
         return eval_import(t)
+    elif t[0] == t_INPUT:
+        return eval_input(t)
     else:
         global string_to_log
         string_to_log = "Unknown command '" + t[0] + "'"
@@ -770,6 +788,13 @@ def eval_import(t):
 
     string_to_log = "File '%s'\'s functions imported" % t[1][1:-1]
 
+
+def eval_input(t):
+    global string_to_log
+
+    string = input()
+    string_to_log = "Input executed got string '%s' from user" % string
+    return string
 
 # -------------------- DISPLAY --------------------
 

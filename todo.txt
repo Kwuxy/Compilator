@@ -6,7 +6,6 @@ TODO :
     - Tableaux
     - Precedence (???)
     - Gestion des erreurs
-    - Gestion saisie clavier
     - Manipulation fichier
 
 
@@ -24,3 +23,4 @@ DONE :
     - Commentaires
     - Variables globales
     - Import
+    - Gestion saisie clavier

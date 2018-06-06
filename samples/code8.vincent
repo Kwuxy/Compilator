@@ -2,4 +2,9 @@ import "samples/code7.vincent"
 
 call printer("Begin program")
 echo "factor(5) : " + call factor(5)
+
+temp = input()
+
+echo "Text entered by user : " + temp
+
 call printer("End program")
