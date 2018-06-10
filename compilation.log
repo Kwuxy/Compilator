@@ -1,7 +1,7 @@
-Compilation begin on 2018-06-06 20:37:10 
+Compilation begin on 2018-06-10 15:11:19 
 
 program : (
-	('import', '"samples/code7.vincent"')
+	('import', '"samples/code7.test"')
 	('call', 'printer', ['"Begin program"'])
 	('echo', ('+', '"factor(5) : "', ('call', 'factor', [5])))
 	('=', 'temp', ('input',))
@@ -16,7 +16,7 @@ function_stack : [
 	{},
 ]
 
-	Evaluation : ('import', '"samples/code7.vincent"') : File 'samples/code7.vincent''s functions imported 
+	Evaluation : ('import', '"samples/code7.test"') : File 'samples/code7.test''s functions imported 
 
 
 
@@ -258,7 +258,7 @@ function_stack : [
 	{},
 ]
 
-	Evaluation : ('=', 'temp', ('input',)) : temp <--- test1 
+	Evaluation : ('=', 'temp', ('input',)) : temp <--- input text 
 
 
 
@@ -269,7 +269,7 @@ functions : {
 }
 function_stack : [
 	{},
-	{'temp': 'test1'},
+	{'temp': 'input text'},
 ]
 
 	Evaluation : ('echo', ('+', '"Text entered by user : "', 'temp')) : echo executed 
@@ -283,7 +283,7 @@ functions : {
 }
 function_stack : [
 	{},
-	{'temp': 'test1'},
+	{'temp': 'input text'},
 	{'var': 'End program'},
 ]
 
@@ -298,7 +298,7 @@ functions : {
 }
 function_stack : [
 	{},
-	{'temp': 'test1'},
+	{'temp': 'input text'},
 	{'var': 'End program'},
 ]
 
@@ -313,11 +313,11 @@ functions : {
 }
 function_stack : [
 	{},
-	{'temp': 'test1'},
+	{'temp': 'input text'},
 ]
 
 	Evaluation : ('call', 'printer', ['"End program"']) : None 
 
 
 
-Compilation executed in 2.3883 seconds
+Compilation executed in 4.4688 seconds

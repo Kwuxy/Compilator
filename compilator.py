@@ -792,6 +792,7 @@ def eval_import(t):
 def eval_input(t):
     global string_to_log
 
+    print('>> ', end='')
     string = input()
     string_to_log = "Input executed got string '%s' from user" % string
     return string

@@ -1,4 +1,4 @@
-import "samples/code7.vincent"
+import "samples/code7.test"
 
 call printer("Begin program")
 echo "factor(5) : " + call factor(5)
